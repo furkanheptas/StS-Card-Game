@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c610c5d1fe214d44681f03d36578cc86, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: "H\xFCseyin"
+  sprite: {fileID: -3775801233035344578, guid: d36832712daf7704bbb7a50b9acff76c, type: 3}
+  maxHP: 5
+  actions:
+  - type: 0
+    value: 4
+    intentIcon: {fileID: 0}
+    label: "Sald\u0131r"
+  - type: 1
+    value: 2
+    intentIcon: {fileID: 0}
+    label: Buff

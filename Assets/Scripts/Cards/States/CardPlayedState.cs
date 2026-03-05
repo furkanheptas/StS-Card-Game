@@ -2,21 +2,25 @@ using UnityEngine;
 
 public class CardPlayedState : CardState
 {
-    private const float PlayAnimationDuration = 0.25f;
+    private const float AnimDuration = 0.3f;
 
-    public CardPlayedState(Card card, CardStateMachine stateMachine) : base(card, stateMachine)
-    {
-    }
+    public CardPlayedState(Card card, CardStateMachine stateMachine) : base(card, stateMachine) { }
 
     public override void OnEnter()
     {
-        card.SetSortingOrder(300);
-        card.Animator.MoveTo(Vector3.zero, PlayAnimationDuration, OnPlayAnimationComplete);
-        card.Animator.ScaleTo(Vector3.zero, PlayAnimationDuration);
+        card.CanvasGroup.blocksRaycasts = false;
+        card.Animator.StopAllAnimations();
+
+        Vector2 discardLocalPos = DeckManager.Instance != null
+            ? DeckManager.Instance.GetDiscardPileLocalPosition()
+            : Vector2.zero;
+
+        card.Animator.MoveTo(discardLocalPos, AnimDuration);
+        card.Animator.ScaleTo(Vector3.one * 0.2f, AnimDuration, OnAnimationComplete);
     }
 
-    private void OnPlayAnimationComplete()
+    private void OnAnimationComplete()
     {
-        card.gameObject.SetActive(false);
+        Object.Destroy(card.gameObject);
     }
 }

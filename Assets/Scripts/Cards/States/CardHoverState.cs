@@ -2,20 +2,28 @@ using UnityEngine;
 
 public class CardHoverState : CardState
 {
-    private const float HoverScale = 1.1f;
-    private const float HoverLiftAmount = 0.5f;
-    private const float HoverDuration = 0.15f;
+    private const float HoverScale      = 1.12f;
+    private const float HoverLiftPixels = 60f;
+    private const float HoverDuration   = 0.15f;
 
-    public CardHoverState(Card card, CardStateMachine stateMachine) : base(card, stateMachine)
-    {
-    }
+    private int originalSiblingIndex;
+
+    public CardHoverState(Card card, CardStateMachine stateMachine) : base(card, stateMachine) { }
 
     public override void OnEnter()
     {
-        card.SetSortingOrder(100);
-        Vector3 hoverPosition = card.OriginalPosition + Vector3.up * HoverLiftAmount;
-        card.Animator.MoveTo(hoverPosition, HoverDuration);
-        card.Animator.ScaleTo(card.OriginalScale * HoverScale, HoverDuration);
+        originalSiblingIndex = card.RectTransform.GetSiblingIndex();
+        card.RectTransform.SetAsLastSibling();
+
+        Vector2 hoverPos = card.HandAnchoredPosition + Vector2.up * HoverLiftPixels;
+        card.Animator.MoveTo(hoverPos, HoverDuration);
+        card.Animator.RotateTo(Quaternion.identity, HoverDuration);
+        card.Animator.ScaleTo(Vector3.one * HoverScale, HoverDuration);
+    }
+
+    public override void OnExit()
+    {
+        card.RectTransform.SetSiblingIndex(originalSiblingIndex);
     }
 
     public override void OnPointerExit()

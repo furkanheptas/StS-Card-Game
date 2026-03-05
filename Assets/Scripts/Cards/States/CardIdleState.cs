@@ -2,22 +2,17 @@ using UnityEngine;
 
 public class CardIdleState : CardState
 {
-    private const float ReturnDuration = 0.2f;
+    private const float ReturnDuration = 0.25f;
 
-    private readonly Vector3 originalScale;
-    private readonly int originalSortingOrder;
-
-    public CardIdleState(Card card, CardStateMachine stateMachine) : base(card, stateMachine)
-    {
-        originalScale = card.transform.localScale;
-        originalSortingOrder = card.SortingOrder;
-    }
+    public CardIdleState(Card card, CardStateMachine stateMachine) : base(card, stateMachine) { }
 
     public override void OnEnter()
     {
-        card.SetSortingOrder(originalSortingOrder);
-        card.Animator.MoveTo(card.OriginalPosition, ReturnDuration);
-        card.Animator.ScaleTo(originalScale, ReturnDuration);
+        card.Animator.StopAllAnimations();
+        card.Animator.MoveTo(card.HandAnchoredPosition, ReturnDuration);
+        card.Animator.RotateTo(card.HandRotation, ReturnDuration);
+        card.Animator.ScaleTo(Vector3.one, ReturnDuration);
+        card.CanvasGroup.blocksRaycasts = true;
     }
 
     public override void OnPointerEnter()

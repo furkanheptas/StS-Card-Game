@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum CardType { Attack, Skill, Power }
@@ -15,4 +16,7 @@ public class CardData : ScriptableObject
     public int manaCost;
     public CardType cardType;
     public TargetType targetType;
+
+    [Header("Effects")]
+    public List<CardEffect> effects = new List<CardEffect>();
 }

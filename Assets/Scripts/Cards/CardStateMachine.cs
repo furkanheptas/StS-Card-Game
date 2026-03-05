@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class CardStateMachine
 {
     private CardState currentState;
@@ -14,30 +12,18 @@ public class CardStateMachine
 
     public void ChangeState(CardState newState)
     {
-        if (currentState != null)
-        {
-            currentState.OnExit();
-        }
-
+        currentState?.OnExit();
         currentState = newState;
         currentState.OnEnter();
     }
 
-    public void Update()
-    {
-        currentState?.Update();
-    }
-
-    public void FixedUpdate()
-    {
-        currentState?.FixedUpdate();
-    }
+    public void Update() => currentState?.Update();
 
     public void OnPointerEnter() => currentState?.OnPointerEnter();
-    public void OnPointerExit() => currentState?.OnPointerExit();
-    public void OnPointerDown() => currentState?.OnPointerDown();
-    public void OnPointerUp() => currentState?.OnPointerUp();
-    public void OnBeginDrag() => currentState?.OnBeginDrag();
-    public void OnDrag() => currentState?.OnDrag();
-    public void OnEndDrag() => currentState?.OnEndDrag();
+    public void OnPointerExit()  => currentState?.OnPointerExit();
+    public void OnPointerDown()  => currentState?.OnPointerDown();
+    public void OnPointerUp()    => currentState?.OnPointerUp();
+    public void OnBeginDrag()    => currentState?.OnBeginDrag();
+    public void OnDrag()         => currentState?.OnDrag();
+    public void OnEndDrag()      => currentState?.OnEndDrag();
 }

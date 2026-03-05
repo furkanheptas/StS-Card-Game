@@ -1,57 +1,68 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(SpriteRenderer))]
+[RequireComponent(typeof(RectTransform))]
+[RequireComponent(typeof(CanvasGroup))]
 [RequireComponent(typeof(CardAnimator))]
-public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
-    IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Card : MonoBehaviour,
+    IPointerEnterHandler, IPointerExitHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler,
+    IPointerDownHandler, IPointerUpHandler
 {
-    [Header("Card Data")]
-    [SerializeField] private CardData cardData;
+    [Header("Visual References")]
+    [SerializeField] private Image artworkImage;
+    [SerializeField] private TextMeshProUGUI cardNameText;
+    [SerializeField] private TextMeshProUGUI descriptionText;
+    [SerializeField] private TextMeshProUGUI manaCostText;
 
     [Header("Targeting")]
     [SerializeField] private LineRenderer aimLine;
     [SerializeField] private LayerMask enemyLayerMask;
 
     private CardStateMachine stateMachine;
-    private SpriteRenderer spriteRenderer;
-    private CardAnimator cardAnimator;
-    private Vector3 originalPosition;
-    private int originalSortingOrder;
+    private CardData cardData;
+    private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+
+    private Vector2 handAnchoredPosition;
+    private Quaternion handRotation = Quaternion.identity;
 
     public Collider2D AimTarget { get; set; }
 
-    public CardIdleState IdleState { get; private set; }
-    public CardHoverState HoverState { get; private set; }
-    public CardDragState DragState { get; private set; }
-    public CardAimState AimState { get; private set; }
+    public CardIdleState     IdleState     { get; private set; }
+    public CardHoverState    HoverState    { get; private set; }
+    public CardDragState     DragState     { get; private set; }
+    public CardAimState      AimState      { get; private set; }
     public CardReleasedState ReleasedState { get; private set; }
-    public CardPlayedState PlayedState { get; private set; }
+    public CardPlayedState   PlayedState   { get; private set; }
 
-    public CardData Data => cardData;
-    public CardAnimator Animator => cardAnimator;
-    public LineRenderer AimLine => aimLine;
-    public LayerMask EnemyLayerMask => enemyLayerMask;
-    public Vector3 OriginalPosition => originalPosition;
-    public Vector3 OriginalScale { get; private set; }
-    public int OriginalSortingOrder => originalSortingOrder;
-    public int SortingOrder => spriteRenderer.sortingOrder;
+    public CardData         Data                 => cardData;
+    public CardAnimator     Animator             { get; private set; }
+    public RectTransform    RectTransform        => rectTransform;
+    public CanvasGroup      CanvasGroup          => canvasGroup;
+    public Canvas           RootCanvas           { get; private set; }
+    public LineRenderer     AimLine              => aimLine;
+    public LayerMask        EnemyLayerMask       => enemyLayerMask;
+    public Vector2          HandAnchoredPosition => handAnchoredPosition;
+    public Quaternion       HandRotation         => handRotation;
+    public CardStateMachine StateMachine         => stateMachine;
 
     private void Awake()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        cardAnimator = GetComponent<CardAnimator>();
-        originalPosition = transform.position;
-        OriginalScale = transform.localScale;
-        originalSortingOrder = spriteRenderer.sortingOrder;
+        rectTransform = GetComponent<RectTransform>();
+        canvasGroup   = GetComponent<CanvasGroup>();
+        Animator      = GetComponent<CardAnimator>();
+        RootCanvas    = GetComponentInParent<Canvas>();
 
-        stateMachine = new CardStateMachine();
-        IdleState = new CardIdleState(this, stateMachine);
-        HoverState = new CardHoverState(this, stateMachine);
-        DragState = new CardDragState(this, stateMachine);
-        AimState = new CardAimState(this, stateMachine);
+        stateMachine  = new CardStateMachine();
+        IdleState     = new CardIdleState(this, stateMachine);
+        HoverState    = new CardHoverState(this, stateMachine);
+        DragState     = new CardDragState(this, stateMachine);
+        AimState      = new CardAimState(this, stateMachine);
         ReleasedState = new CardReleasedState(this, stateMachine);
-        PlayedState = new CardPlayedState(this, stateMachine);
+        PlayedState   = new CardPlayedState(this, stateMachine);
 
         if (aimLine != null) aimLine.enabled = false;
     }
@@ -66,19 +77,27 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         stateMachine.Update();
     }
 
-    private void FixedUpdate()
+    public void SetAimLine(LineRenderer line) => aimLine = line;
+
+    public void Initialize(CardData data)
     {
-        stateMachine.FixedUpdate();
+        cardData = data;
+        if (cardNameText    != null) cardNameText.text    = data.cardName;
+        if (descriptionText != null) descriptionText.text = data.description;
+        if (manaCostText    != null) manaCostText.text    = data.manaCost.ToString();
+        if (artworkImage    != null && data.artwork != null) artworkImage.sprite = data.artwork;
     }
 
-    public void SetPosition(Vector3 position)
+    public void SetHandTransform(Vector2 anchoredPosition, Quaternion rotation)
     {
-        transform.position = position;
-    }
+        handAnchoredPosition = anchoredPosition;
+        handRotation         = rotation;
 
-    public void SetSortingOrder(int order)
-    {
-        spriteRenderer.sortingOrder = order;
+        if (stateMachine.CurrentState is CardIdleState)
+        {
+            Animator.MoveTo(anchoredPosition, 0.2f);
+            Animator.RotateTo(rotation, 0.2f);
+        }
     }
 
     public bool TryPlayCard()
@@ -88,17 +107,19 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,
         ManaSystem mana = ManaSystem.Instance;
         if (mana != null && !mana.CanAfford(cardData.manaCost)) return false;
 
-        DropZone zone = DropZone.FindZoneAtPoint(transform.position);
-        if (zone == null) return false;
-
         mana?.SpendMana(cardData.manaCost);
-        zone.AcceptCard(this);
+        CardEffectResolver.Resolve(cardData, AimTarget);
+        DeckManager.Instance?.OnCardPlayed(this);
         return true;
     }
 
     public void OnPointerEnter(PointerEventData eventData) => stateMachine.OnPointerEnter();
-    public void OnPointerExit(PointerEventData eventData) => stateMachine.OnPointerExit();
-    public void OnBeginDrag(PointerEventData eventData) => stateMachine.OnBeginDrag();
-    public void OnDrag(PointerEventData eventData) => stateMachine.OnDrag();
-    public void OnEndDrag(PointerEventData eventData) => stateMachine.OnEndDrag();
+    public void OnPointerExit(PointerEventData eventData)  => stateMachine.OnPointerExit();
+    public void OnPointerDown(PointerEventData eventData)  => stateMachine.OnPointerDown();
+    public void OnPointerUp(PointerEventData eventData)    => stateMachine.OnPointerUp();
+    public void OnBeginDrag(PointerEventData eventData)    => stateMachine.OnBeginDrag();
+    public void OnDrag(PointerEventData eventData)         => stateMachine.OnDrag();
+    public void OnEndDrag(PointerEventData eventData)      => stateMachine.OnEndDrag();
 }
+
+

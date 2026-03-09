@@ -8,7 +8,7 @@ public abstract class CardState
         this.card         = card;
         this.stateMachine = stateMachine;
     }
-
+    //gskgnskgns
     public virtual void OnEnter() { }
     public virtual void OnExit()  { }
     public virtual void Update()  { }

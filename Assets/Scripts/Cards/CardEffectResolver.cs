@@ -1,34 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Resolves all card effects against the correct targets.
-/// Centralises all combat math so individual cards stay data-only.
-/// </summary>
 public static class CardEffectResolver
 {
-    // Global combat modifiers (reset at the start of each combat)
     private static int globalEnemyDamageTakenBonus      = 0;
     private static int globalEnemyDamageDealtReduction  = 0;
 
-    /// <summary>Flat bonus added to all damage enemies take (e.g. Amplify effect).</summary>
     public static int GlobalEnemyDamageTakenBonus     => globalEnemyDamageTakenBonus;
 
-    /// <summary>Flat reduction to all damage enemies deal (e.g. Weakening Aura effect).</summary>
     public static int GlobalEnemyDamageDealtReduction => globalEnemyDamageDealtReduction;
 
-    /// <summary>Reset global modifiers. Call this when a new combat starts.</summary>
     public static void ResetCombatModifiers()
     {
         globalEnemyDamageTakenBonus     = 0;
         globalEnemyDamageDealtReduction = 0;
     }
 
-    // -----------------------------------------------------------------------
-
-    /// <summary>
-    /// Main entry point. Dispatches each effect in the card to the right target(s).
-    /// </summary>
     public static void Resolve(CardData cardData, Collider2D singleTarget)
     {
         Player player = Player.Instance;
@@ -59,9 +46,6 @@ public static class CardEffectResolver
         }
     }
 
-    // -----------------------------------------------------------------------
-    // Per-target apply methods
-
     private static void ApplyToEnemy(CardEffect effect, Enemy enemy, Player player)
     {
         if (enemy == null) return;
@@ -75,7 +59,6 @@ public static class CardEffectResolver
                 int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
                 enemy.TakeDamage(finalDamage);
 
-                // Thorns feedback
                 int thorns = enemy.GetThorns();
                 if (thorns > 0 && player != null)
                     player.TakeDamage(thorns);
@@ -130,7 +113,6 @@ public static class CardEffectResolver
                 break;
 
             case CardEffectType.SelfDamage:
-                // Bypasses shield – direct HP loss (e.g. blood-cost cards)
                 player.TakeDamage(effect.value);
                 break;
 
@@ -191,10 +173,6 @@ public static class CardEffectResolver
                 break;
         }
     }
-
-    // -----------------------------------------------------------------------
-    // Helpers
-
     private static void DiscardRandomCards(int count)
     {
         DeckManager deck = DeckManager.Instance;

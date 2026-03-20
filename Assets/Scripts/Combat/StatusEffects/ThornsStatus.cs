@@ -1,7 +1,3 @@
-/// <summary>
-/// Thorns: reflects a fixed amount of damage back to any attacker.
-/// Permanent; checked in damage resolution when an attack lands.
-/// </summary>
 public class ThornsStatus : StatusEffectBase
 {
     public const string StatusId = "Thorns";

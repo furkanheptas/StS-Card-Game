@@ -1,55 +1,225 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Resolves all card effects against the correct targets.
+/// Centralises all combat math so individual cards stay data-only.
+/// </summary>
 public static class CardEffectResolver
 {
+    // Global combat modifiers (reset at the start of each combat)
+    private static int globalEnemyDamageTakenBonus      = 0;
+    private static int globalEnemyDamageDealtReduction  = 0;
+
+    /// <summary>Flat bonus added to all damage enemies take (e.g. Amplify effect).</summary>
+    public static int GlobalEnemyDamageTakenBonus     => globalEnemyDamageTakenBonus;
+
+    /// <summary>Flat reduction to all damage enemies deal (e.g. Weakening Aura effect).</summary>
+    public static int GlobalEnemyDamageDealtReduction => globalEnemyDamageDealtReduction;
+
+    /// <summary>Reset global modifiers. Call this when a new combat starts.</summary>
+    public static void ResetCombatModifiers()
+    {
+        globalEnemyDamageTakenBonus     = 0;
+        globalEnemyDamageDealtReduction = 0;
+    }
+
+    // -----------------------------------------------------------------------
+
+    /// <summary>
+    /// Main entry point. Dispatches each effect in the card to the right target(s).
+    /// </summary>
     public static void Resolve(CardData cardData, Collider2D singleTarget)
     {
-        switch (cardData.targetType)
+        Player player = Player.Instance;
+
+        foreach (CardEffect effect in cardData.effects)
         {
-            case TargetType.SingleEnemy:
-                if (singleTarget != null)
-                {
-                    Enemy enemy = singleTarget.GetComponent<Enemy>();
-                    foreach (CardEffect effect in cardData.effects)
-                        ApplyToEnemy(effect, enemy);
-                }
-                break;
+            switch (cardData.targetType)
+            {
+                case TargetType.SingleEnemy:
+                    if (singleTarget != null)
+                    {
+                        Enemy enemy = singleTarget.GetComponent<Enemy>();
+                        if (enemy != null)
+                            ApplyToEnemy(effect, enemy, player);
+                    }
+                    break;
 
-            case TargetType.AllEnemies:
-                foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
-                    foreach (CardEffect effect in cardData.effects)
-                        ApplyToEnemy(effect, enemy);
-                break;
+                case TargetType.AllEnemies:
+                    foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+                        ApplyToEnemy(effect, enemy, player);
+                    break;
 
-            case TargetType.Self:
-            case TargetType.None:
-                foreach (CardEffect effect in cardData.effects)
-                    ApplyToPlayer(effect);
-                break;
+                case TargetType.Self:
+                case TargetType.None:
+                    ApplyToPlayer(effect, player);
+                    break;
+            }
         }
     }
 
-    private static void ApplyToEnemy(CardEffect effect, Enemy enemy)
+    // -----------------------------------------------------------------------
+    // Per-target apply methods
+
+    private static void ApplyToEnemy(CardEffect effect, Enemy enemy, Player player)
     {
         if (enemy == null) return;
 
         switch (effect.type)
         {
-            case CardEffectType.Damage: enemy.TakeDamage(effect.value); break;
-            case CardEffectType.Block:  enemy.GainShield(effect.value); break;
+            case CardEffectType.Damage:
+                int rawDamage = player != null
+                    ? player.CalculateOutgoingDamage(effect.value)
+                    : effect.value;
+                int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
+                enemy.TakeDamage(finalDamage);
+
+                // Thorns feedback
+                int thorns = enemy.GetThorns();
+                if (thorns > 0 && player != null)
+                    player.TakeDamage(thorns);
+                break;
+
+            case CardEffectType.Block:
+                enemy.GainShield(effect.value);
+                break;
+
+            case CardEffectType.ApplyPoison:
+                enemy.ApplyStatus(new PoisonStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyBurn:
+                enemy.ApplyStatus(new BurnStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyVulnerable:
+                enemy.ApplyStatus(new VulnerableStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyWeak:
+                enemy.ApplyStatus(new WeakStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyFrail:
+                enemy.ApplyStatus(new FrailStatus(effect.value));
+                break;
+
+            case CardEffectType.Heal:
+                enemy.Heal(effect.value);
+                break;
         }
     }
 
-    private static void ApplyToPlayer(CardEffect effect)
+    private static void ApplyToPlayer(CardEffect effect, Player player)
     {
-        Player player = Player.Instance;
         if (player == null) return;
 
         switch (effect.type)
         {
-            case CardEffectType.Block:    player.GainShield(effect.value);              break;
-            case CardEffectType.Heal:     player.Heal(effect.value);                    break;
-            case CardEffectType.DrawCard: DeckManager.Instance?.DrawCards(effect.value); break;
+            case CardEffectType.Block:
+                player.GainShield(effect.value);
+                break;
+
+            case CardEffectType.PermanentBlock:
+                player.GainPermanentShield(effect.value);
+                break;
+
+            case CardEffectType.Heal:
+                player.Heal(effect.value);
+                break;
+
+            case CardEffectType.SelfDamage:
+                // Bypasses shield – direct HP loss (e.g. blood-cost cards)
+                player.TakeDamage(effect.value);
+                break;
+
+            case CardEffectType.DrawCard:
+                DeckManager.Instance?.DrawCards(effect.value);
+                break;
+
+            case CardEffectType.DiscardCard:
+                DiscardRandomCards(effect.value);
+                break;
+
+            case CardEffectType.SetHandSize:
+                DeckManager.Instance?.SetHandSize(effect.value);
+                break;
+
+            case CardEffectType.ReduceCardCost:
+                ReduceRandomCardCostInHand(effect.value);
+                break;
+
+            case CardEffectType.GainStrength:
+                player.ApplyStatus(new StrengthStatus(effect.value));
+                break;
+
+            case CardEffectType.GainRegeneration:
+                player.ApplyStatus(new RegenerationStatus(effect.value));
+                break;
+
+            case CardEffectType.GainThorns:
+                player.ApplyStatus(new ThornsStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyPoison:
+                player.ApplyStatus(new PoisonStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyBurn:
+                player.ApplyStatus(new BurnStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyVulnerable:
+                player.ApplyStatus(new VulnerableStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyWeak:
+                player.ApplyStatus(new WeakStatus(effect.value));
+                break;
+
+            case CardEffectType.ApplyFrail:
+                player.ApplyStatus(new FrailStatus(effect.value));
+                break;
+
+            case CardEffectType.AmplifiyEnemyDamageTaken:
+                globalEnemyDamageTakenBonus += effect.value;
+                break;
+
+            case CardEffectType.ReduceEnemyDamageDealt:
+                globalEnemyDamageDealtReduction += effect.value;
+                break;
         }
     }
+
+    // -----------------------------------------------------------------------
+    // Helpers
+
+    private static void DiscardRandomCards(int count)
+    {
+        DeckManager deck = DeckManager.Instance;
+        if (deck == null) return;
+
+        List<Card> handSnapshot = new List<Card>(deck.Hand);
+        int toDiscard = Mathf.Min(count, handSnapshot.Count);
+
+        for (int i = 0; i < toDiscard; i++)
+        {
+            int randomIndex = Random.Range(0, handSnapshot.Count);
+            Card card = handSnapshot[randomIndex];
+            handSnapshot.RemoveAt(randomIndex);
+            deck.DiscardCard(card);
+        }
+    }
+
+    private static void ReduceRandomCardCostInHand(int reduction)
+    {
+        DeckManager deck = DeckManager.Instance;
+        if (deck == null || deck.HandCount == 0) return;
+
+        List<Card> handSnapshot = new List<Card>(deck.Hand);
+        int randomIndex = Random.Range(0, handSnapshot.Count);
+        handSnapshot[randomIndex].ReduceManaCost(reduction);
+    }
 }
+

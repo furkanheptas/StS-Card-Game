@@ -14,23 +14,18 @@ public class Player : MonoBehaviour, ICombatEntity
     public int CurrentShield  { get; private set; }
     public int MaxHP          => data.maxHP;
 
-    // ICombatEntity
     public int   Strength                 => statusManager.GetStrength();
     public float OutgoingDamageMultiplier => 1f;
     public IReadOnlyList<IStatusEffect> StatusEffects => statusManager.Effects;
 
     private readonly StatusEffectManager statusManager = new StatusEffectManager();
 
-    /// <summary>Direct access to the player's StatusEffectManager (read-only intended for external systems).</summary>
     public StatusEffectManager StatusManager => statusManager;
 
     public event Action<int, int> OnHPChanged;
     public event Action<int>      OnShieldChanged;
     public event Action           OnDied;
     public event Action           OnStatusChanged;
-
-    // -----------------------------------------------------------------------
-
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -45,10 +40,6 @@ public class Player : MonoBehaviour, ICombatEntity
         view?.Initialize(this);
     }
 
-    // -----------------------------------------------------------------------
-    // ICombatEntity
-
-    /// <summary>Applies damage after Vulnerable modifier; updates HP and Shield.</summary>
     public void TakeDamage(int amount)
     {
         int final     = statusManager.CalculateIncomingDamage(amount);
@@ -63,14 +54,12 @@ public class Player : MonoBehaviour, ICombatEntity
         if (CurrentHP <= 0) OnDied?.Invoke();
     }
 
-    /// <summary>Gains shield after Frail modifier.</summary>
     public void GainShield(int amount)
     {
         CurrentShield += statusManager.CalculateBlockGain(amount);
         OnShieldChanged?.Invoke(CurrentShield);
     }
 
-    /// <summary>Gains shield that persists across turns (Barricade / retain shield effect).</summary>
     public void GainPermanentShield(int amount)
     {
         CurrentShield += amount;
@@ -95,17 +84,12 @@ public class Player : MonoBehaviour, ICombatEntity
         OnStatusChanged?.Invoke();
     }
 
-    // -----------------------------------------------------------------------
-    // Turn hooks
-
-    /// <summary>Called by CombatManager at the very start of the player's turn.</summary>
     public void OnTurnStart()
     {
         statusManager.TickTurnStart(this);
         OnStatusChanged?.Invoke();
     }
 
-    /// <summary>Called by DeckManager at end of turn. Resets shield to match STS default.</summary>
     public void OnTurnEnd()
     {
         statusManager.TickTurnEnd(this);
@@ -114,10 +98,6 @@ public class Player : MonoBehaviour, ICombatEntity
         OnStatusChanged?.Invoke();
     }
 
-    // -----------------------------------------------------------------------
-    // Damage helper
-
-    /// <summary>Calculates final outgoing attack damage with Strength and Weak applied.</summary>
     public int CalculateOutgoingDamage(int baseDamage) =>
         statusManager.CalculateOutgoingDamage(baseDamage);
 }

@@ -92,7 +92,6 @@ public class Card : MonoBehaviour,
         RefreshManaCostDisplay();
     }
 
-    /// <summary>Reduces this card's mana cost for the current combat by the given amount (minimum 0).</summary>
     public void ReduceManaCost(int reduction)
     {
         runtimeManaCost = Mathf.Max(0, runtimeManaCost - reduction);

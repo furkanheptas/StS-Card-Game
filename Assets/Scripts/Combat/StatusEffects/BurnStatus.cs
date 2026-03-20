@@ -1,6 +1,3 @@
-/// <summary>
-/// Burn: deals a fixed amount of damage at the end of the entity's turn, then decrements by 1.
-/// </summary>
 public class BurnStatus : StatusEffectBase
 {
     public const string StatusId = "Burn";

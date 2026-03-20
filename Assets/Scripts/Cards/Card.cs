@@ -25,6 +25,7 @@ public class Card : MonoBehaviour,
     private CardData cardData;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
+    private int runtimeManaCost;
 
     private Vector2 handAnchoredPosition;
     private Quaternion handRotation = Quaternion.identity;
@@ -81,11 +82,25 @@ public class Card : MonoBehaviour,
 
     public void Initialize(CardData data)
     {
-        cardData = data;
+        cardData       = data;
+        runtimeManaCost = data.manaCost;
+
         if (cardNameText    != null) cardNameText.text    = data.cardName;
         if (descriptionText != null) descriptionText.text = data.description;
-        if (manaCostText    != null) manaCostText.text    = data.manaCost.ToString();
         if (artworkImage    != null && data.artwork != null) artworkImage.sprite = data.artwork;
+
+        RefreshManaCostDisplay();
+    }
+
+    public void ReduceManaCost(int reduction)
+    {
+        runtimeManaCost = Mathf.Max(0, runtimeManaCost - reduction);
+        RefreshManaCostDisplay();
+    }
+
+    private void RefreshManaCostDisplay()
+    {
+        if (manaCostText != null) manaCostText.text = runtimeManaCost.ToString();
     }
 
     public void SetHandTransform(Vector2 anchoredPosition, Quaternion rotation)
@@ -105,9 +120,9 @@ public class Card : MonoBehaviour,
         if (cardData == null) return false;
 
         ManaSystem mana = ManaSystem.Instance;
-        if (mana != null && !mana.CanAfford(cardData.manaCost)) return false;
+        if (mana != null && !mana.CanAfford(runtimeManaCost)) return false;
 
-        mana?.SpendMana(cardData.manaCost);
+        mana?.SpendMana(runtimeManaCost);
         CardEffectResolver.Resolve(cardData, AimTarget);
         DeckManager.Instance?.OnCardPlayed(this);
         return true;

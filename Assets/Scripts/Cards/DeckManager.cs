@@ -108,6 +108,23 @@ public class DeckManager : MonoBehaviour
         OnHandChanged?.Invoke();
     }
 
+    /// <summary>Discard a specific card from hand (e.g. via a card effect).</summary>
+    public void DiscardCard(Card card)
+    {
+        if (!hand.Contains(card)) return;
+        hand.Remove(card);
+        discardPile.Add(card.Data);
+        Destroy(card.gameObject);
+        RefreshPileViews();
+        OnHandChanged?.Invoke();
+    }
+
+    /// <summary>Override the number of cards drawn at the start of each turn for this combat.</summary>
+    public void SetHandSize(int size)
+    {
+        handSize = Mathf.Max(0, size);
+    }
+
     public void EndTurn()
     {
         StartCoroutine(EndTurnRoutine());

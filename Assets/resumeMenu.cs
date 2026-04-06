@@ -1,9 +1,10 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; 
-using UnityEngine.EventSystems; 
 
-public class ResumeMenu : MonoBehaviour 
+public class ResumeMenu : MonoBehaviour
 {
     #region Panel System
     [Header("Panels")]
@@ -16,30 +17,45 @@ public class ResumeMenu : MonoBehaviour
         SetupButtons();
     }
 
-    private void InitializePanels() 
+    private void InitializePanels()
     {
-        InGamePanel.SetActive(true);
-        PausePanel.SetActive(false);
+        if (InGamePanel != null) InGamePanel.SetActive(true);
+        if (PausePanel != null) PausePanel.SetActive(false);
     }
 
-    public void PauseGame() 
+    private void Update()
+    {
+        // ESC Tuşu Kontrolü
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            if (PausePanel != null && PausePanel.activeSelf)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
+    }
+
+    public void PauseGame()
     {
         Time.timeScale = 0f;
-        InGamePanel.SetActive(false);
-        PausePanel.SetActive(true);
+        if (InGamePanel != null) InGamePanel.SetActive(false);
+        if (PausePanel != null) PausePanel.SetActive(true);
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f;
-        InGamePanel.SetActive(true);
-        PausePanel.SetActive(false);
+        if (InGamePanel != null) InGamePanel.SetActive(true);
+        if (PausePanel != null) PausePanel.SetActive(false);
     }
     #endregion
 
     #region Button System
     [Header("Buttons")]
-    public Button PauseBtn;
     public Button ResumeBtn;
     public Button MainMenuBtn;
 
@@ -48,13 +64,20 @@ public class ResumeMenu : MonoBehaviour
 
     private void SetupButtons()
     {
-        PauseBtn.onClick.RemoveAllListeners();
-        ResumeBtn.onClick.RemoveAllListeners();
-        MainMenuBtn.onClick.RemoveAllListeners();
+        // Sadece sahnede olan butonları kuruyoruz
+        if (ResumeBtn != null)
+        {
+            ResumeBtn.onClick.RemoveAllListeners();
+            ResumeBtn.onClick.AddListener(() => { PlayClickSound(); ResumeGame(); });
+            AddHoverEventsToButton(ResumeBtn);
+        }
 
-        PauseBtn.onClick.AddListener(() => { PlayClickSound(); PauseGame(); });
-        ResumeBtn.onClick.AddListener(() => { PlayClickSound(); ResumeGame(); });
-        MainMenuBtn.onClick.AddListener(() => { PlayClickSound(); GoToMenu(); });
+        if (MainMenuBtn != null)
+        {
+            MainMenuBtn.onClick.RemoveAllListeners();
+            MainMenuBtn.onClick.AddListener(() => { PlayClickSound(); GoToMenu(); });
+            AddHoverEventsToButton(MainMenuBtn);
+        }
 
         SetupAudioSystem();
     }
@@ -85,7 +108,6 @@ public class ResumeMenu : MonoBehaviour
     private void SetupAudioSystem()
     {
         LoadAudioSettings();
-        AddHoverEvents();
     }
 
     private void LoadAudioSettings()
@@ -103,20 +125,16 @@ public class ResumeMenu : MonoBehaviour
         }
     }
 
-    private void AddHoverEvents()
-    {
-        AddHoverEventsToButton(PauseBtn);
-        AddHoverEventsToButton(ResumeBtn);
-        AddHoverEventsToButton(MainMenuBtn);
-    }
-
     private void AddHoverEventsToButton(Button button)
     {
+        if (button == null) return;
+
         EventTrigger eventTrigger = button.gameObject.GetComponent<EventTrigger>() ?? button.gameObject.AddComponent<EventTrigger>();
 
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerEnter;
         entry.callback.AddListener((data) => { PlayHoverSound(); });
+        eventTrigger.triggers.Clear(); // Eski triggerları temizle
         eventTrigger.triggers.Add(entry);
     }
 

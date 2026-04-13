@@ -132,6 +132,15 @@ public class DeckManager : MonoBehaviour
 
     private IEnumerator EndTurnRoutine()
     {
+        foreach (Card card in hand)
+        {
+            if (card != null)
+            {
+                card.CanvasGroup.blocksRaycasts = false; 
+                card.Animator.StopAllAnimations();      
+            }
+        }
+
         const float discardDuration = 0.22f;
         const float stagger = 0.06f;
 

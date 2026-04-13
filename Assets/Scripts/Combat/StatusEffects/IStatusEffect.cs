@@ -11,4 +11,7 @@ public interface IStatusEffect
     void OnTurnEnd(ICombatEntity entity);
 
     bool IsExpired { get; }
+  
+    public virtual int ModifyOutgoingDamage(int damage) => damage;
+    public virtual int ModifyIncomingDamage(int damage) => damage;
 }

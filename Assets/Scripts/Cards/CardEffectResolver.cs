@@ -3,16 +3,16 @@ using UnityEngine;
 
 public static class CardEffectResolver
 {
-    private static int globalEnemyDamageTakenBonus      = 0;
-    private static int globalEnemyDamageDealtReduction  = 0;
+    private static int globalEnemyDamageTakenBonus = 0;
+    private static int globalEnemyDamageDealtReduction = 0;
 
-    public static int GlobalEnemyDamageTakenBonus     => globalEnemyDamageTakenBonus;
+    public static int GlobalEnemyDamageTakenBonus => globalEnemyDamageTakenBonus;
 
     public static int GlobalEnemyDamageDealtReduction => globalEnemyDamageDealtReduction;
 
     public static void ResetCombatModifiers()
     {
-        globalEnemyDamageTakenBonus     = 0;
+        globalEnemyDamageTakenBonus = 0;
         globalEnemyDamageDealtReduction = 0;
     }
 
@@ -34,8 +34,17 @@ public static class CardEffectResolver
                     break;
 
                 case TargetType.AllEnemies:
-                    foreach (Enemy enemy in Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None))
-                        ApplyToEnemy(effect, enemy, player);
+
+                    if (BattleManager.Instance != null)
+                    {
+
+                        var enemies = new List<Enemy>(BattleManager.Instance.ActiveEnemies);
+                        foreach (Enemy enemy in enemies)
+                        {
+                            if (enemy != null)
+                                ApplyToEnemy(effect, enemy, player);
+                        }
+                    }
                     break;
 
                 case TargetType.Self:
@@ -53,13 +62,14 @@ public static class CardEffectResolver
         switch (effect.type)
         {
             case CardEffectType.Damage:
+                int thorns = enemy.GetThorns();
+
                 int rawDamage = player != null
                     ? player.CalculateOutgoingDamage(effect.value)
                     : effect.value;
                 int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
                 enemy.TakeDamage(finalDamage);
 
-                int thorns = enemy.GetThorns();
                 if (thorns > 0 && player != null)
                     player.TakeDamage(thorns);
                 break;

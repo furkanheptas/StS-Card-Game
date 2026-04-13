@@ -30,11 +30,12 @@ public class CardAimState : CardState
 
     public override void Update()
     {
-        if (aimLine == null) return;
+    
+        if (aimLine == null || card.RootCanvas == null) return;
 
         Vector3 mouseWorld = GetMouseWorldPosition();
+        Camera uiCamera = card.RootCanvas.worldCamera != null ? card.RootCanvas.worldCamera : Camera.main;
 
-        Camera uiCamera = card.RootCanvas?.worldCamera ?? Camera.main;
         RectTransformUtility.ScreenPointToWorldPointInRectangle(
             card.RectTransform,
             RectTransformUtility.WorldToScreenPoint(uiCamera, card.RectTransform.position),

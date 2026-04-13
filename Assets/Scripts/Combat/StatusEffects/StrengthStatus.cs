@@ -6,4 +6,5 @@ public class StrengthStatus : StatusEffectBase
     public StrengthStatus(int stacks) => Stacks = stacks;
 
     public override bool IsExpired => false;
+    public override int ModifyOutgoingDamage(int damage) => damage + Stacks;
 }

@@ -7,4 +7,6 @@ public abstract class StatusEffectBase : IStatusEffect
     public virtual void Stack(int amount) => Stacks += amount;
     public virtual void OnTurnStart(ICombatEntity entity) { }
     public virtual void OnTurnEnd(ICombatEntity entity)   { }
+    public virtual int ModifyOutgoingDamage(int damage) => damage;
+    public virtual int ModifyIncomingDamage(int damage) => damage;
 }

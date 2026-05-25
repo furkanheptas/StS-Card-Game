@@ -4,7 +4,6 @@ using UnityEngine;
 public class StatusEffectManager
 {
     private readonly List<IStatusEffect> effects = new List<IStatusEffect>();
-
     public IReadOnlyList<IStatusEffect> Effects => effects;
 
     public void Apply(IStatusEffect incoming)
@@ -17,16 +16,13 @@ public class StatusEffectManager
     }
 
     public void Remove(string id) => effects.RemoveAll(e => e.Id == id);
-
     public IStatusEffect Get(string id) => effects.Find(e => e.Id == id);
-
     public bool Has(string id) => Get(id) != null && Get(id).Stacks > 0;
 
     public void TickTurnStart(ICombatEntity entity)
     {
         foreach (IStatusEffect effect in new List<IStatusEffect>(effects))
             effect.OnTurnStart(entity);
-
         Prune();
     }
 
@@ -34,51 +30,39 @@ public class StatusEffectManager
     {
         foreach (IStatusEffect effect in new List<IStatusEffect>(effects))
             effect.OnTurnEnd(entity);
-
         Prune();
     }
 
     private void Prune() => effects.RemoveAll(e => e.IsExpired);
 
-    public int GetStrength()
-    {
-        IStatusEffect s = Get(StrengthStatus.StatusId);
-        return s != null ? s.Stacks : 0;
-    }
+    public int GetStrength() => Has(StrengthStatus.StatusId) ? Get(StrengthStatus.StatusId).Stacks : 0;
+    public int GetThorns() => Has(ThornsStatus.StatusId) ? Get(ThornsStatus.StatusId).Stacks : 0;
 
     public int CalculateOutgoingDamage(int baseDamage)
     {
-        float damage = baseDamage + GetStrength();
+        int modifiedDamage = baseDamage;
+        foreach (var effect in effects)
+            modifiedDamage = effect.ModifyOutgoingDamage(modifiedDamage);
 
-        if (Has(WeakStatus.StatusId))
-            damage *= WeakStatus.DamageMultiplier;
-
-        return Mathf.Max(0, Mathf.RoundToInt(damage));
+        return Mathf.Max(0, modifiedDamage);
     }
 
     public int CalculateIncomingDamage(int baseDamage)
     {
-        float damage = baseDamage;
+        int modifiedDamage = baseDamage;
+        foreach (IStatusEffect effect in effects)
+            modifiedDamage = effect.ModifyIncomingDamage(modifiedDamage);
 
-        if (Has(VulnerableStatus.StatusId))
-            damage *= VulnerableStatus.DamageMultiplier;
-
-        return Mathf.RoundToInt(damage);
+        return Mathf.Max(0, modifiedDamage);
     }
 
     public int CalculateBlockGain(int baseBlock)
     {
-        float block = baseBlock;
-
+        int modifiedBlock = baseBlock;
+       
         if (Has(FrailStatus.StatusId))
-            block *= FrailStatus.BlockMultiplier;
+            modifiedBlock = Mathf.RoundToInt(modifiedBlock * FrailStatus.BlockMultiplier);
 
-        return Mathf.Max(0, Mathf.RoundToInt(block));
-    }
-
-    public int GetThorns()
-    {
-        IStatusEffect t = Get(ThornsStatus.StatusId);
-        return t != null ? t.Stacks : 0;
+        return Mathf.Max(0, modifiedBlock);
     }
 }

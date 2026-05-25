@@ -35,7 +35,18 @@ public class Player : MonoBehaviour, ICombatEntity
     private void Start()
     {
         if (data == null) { Debug.LogError("[Player] PlayerData is not assigned.", this); return; }
-        CurrentHP     = data.maxHP;
+
+        RunData run = RunManager.Instance?.CurrentRun;
+        if (run != null)
+        {
+            CurrentHP = run.currentHP;
+            data.maxHP = run.maxHP;
+        }
+        else
+        {
+            CurrentHP = data.maxHP;
+        }
+
         CurrentShield = 0;
         view?.Initialize(this);
     }
@@ -51,7 +62,12 @@ public class Player : MonoBehaviour, ICombatEntity
         OnHPChanged?.Invoke(CurrentHP, MaxHP);
         OnShieldChanged?.Invoke(CurrentShield);
 
-        if (CurrentHP <= 0) OnDied?.Invoke();
+        if (CurrentHP <= 0)
+        {
+            RunManager.Instance?.CurrentRun?.TakeDamage(int.MaxValue);
+            OnDied?.Invoke();
+            RunManager.Instance?.OnPlayerDeath();
+        }
     }
 
     public void GainShield(int amount)
@@ -96,6 +112,9 @@ public class Player : MonoBehaviour, ICombatEntity
         CurrentShield = 0;
         OnShieldChanged?.Invoke(CurrentShield);
         OnStatusChanged?.Invoke();
+
+        if (RunManager.Instance?.CurrentRun != null)
+            RunManager.Instance.CurrentRun.currentHP = CurrentHP;
     }
 
     public int CalculateOutgoingDamage(int baseDamage) =>

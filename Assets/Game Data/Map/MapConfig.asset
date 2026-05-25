@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64fbc9e0f90556a4494a5fe4e089a246, type: 3}
+  m_Name: MapConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MapConfig
+  floorCount: 5
+  columnsPerFloor: 3
+  weightNormal: 60
+  weightElite: 10
+  weightShop: 10
+  weightEvent: 10
+  weightRest: 10
+  eliteGuaranteedFloors: 060000000b000000
+  bossEncounter: {fileID: 11400000, guid: 71dcd1d0b5f075f4c99528521177bc9a, type: 2}
+  normalEncounters:
+  - {fileID: 11400000, guid: 71dcd1d0b5f075f4c99528521177bc9a, type: 2}
+  eliteEncounters:
+  - {fileID: 11400000, guid: 34240e57fa3d51b4b82196c4d74d2813, type: 2}
+  events:
+  - {fileID: 11400000, guid: 864175f5fed2f254e990e1d90c8652fe, type: 2}

@@ -57,7 +57,8 @@ public class DeckManager : MonoBehaviour
     {
         yield return null;
         ManaSystem.Instance?.StartTurn();
-        DrawCards(handSize);
+        int extraDraw = RunManager.Instance?.CurrentRun?.GetBonusCardDraw() ?? 0;
+        DrawCards(handSize + extraDraw);
     }
 
     public void InitializeDeck()
@@ -65,7 +66,10 @@ public class DeckManager : MonoBehaviour
         drawPile.Clear();
         discardPile.Clear();
 
-        if (deckData != null)
+        RunData run = RunManager.Instance?.CurrentRun;
+        if (run != null && run.deck.Count > 0)
+            drawPile.AddRange(run.deck);
+        else if (deckData != null)
             drawPile.AddRange(deckData.cards);
 
         ShuffleDrawPile();
@@ -108,7 +112,6 @@ public class DeckManager : MonoBehaviour
         OnHandChanged?.Invoke();
     }
 
-    /// <summary>Discard a specific card from hand (e.g. via a card effect).</summary>
     public void DiscardCard(Card card)
     {
         if (!hand.Contains(card)) return;
@@ -119,7 +122,6 @@ public class DeckManager : MonoBehaviour
         OnHandChanged?.Invoke();
     }
 
-    /// <summary>Override the number of cards drawn at the start of each turn for this combat.</summary>
     public void SetHandSize(int size)
     {
         handSize = Mathf.Max(0, size);

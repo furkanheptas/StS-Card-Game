@@ -25,7 +25,6 @@ public class ResumeMenu : MonoBehaviour
 
     private void Update()
     {
-        // ESC Tuşu Kontrolü
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (PausePanel != null && PausePanel.activeSelf)
@@ -64,7 +63,6 @@ public class ResumeMenu : MonoBehaviour
 
     private void SetupButtons()
     {
-        // Sadece sahnede olan butonları kuruyoruz
         if (ResumeBtn != null)
         {
             ResumeBtn.onClick.RemoveAllListeners();

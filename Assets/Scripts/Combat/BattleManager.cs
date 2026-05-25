@@ -33,8 +33,28 @@ public class BattleManager : MonoBehaviour
 
     private void Start()
     {
-        if (startingEncounter != null)
-            StartEncounter(startingEncounter);
+        EncounterData encounter = RunManager.Instance?.PendingNode?.encounter ?? startingEncounter;
+        if (encounter != null)
+            StartEncounter(encounter);
+
+        int bonusStrength = RunManager.Instance?.CurrentRun?.GetBonusStrength() ?? 0;
+        if (bonusStrength > 0 && Player.Instance != null)
+            Player.Instance.ApplyStatus(new StrengthStatus(bonusStrength));
+
+        OnAllEnemiesDefeated += HandleVictory;
+    }
+
+    private void OnDestroy()
+    {
+        OnAllEnemiesDefeated -= HandleVictory;
+    }
+
+    private void HandleVictory()
+    {
+        if (RunManager.Instance?.CurrentRun != null && Player.Instance != null)
+            RunManager.Instance.CurrentRun.currentHP = Player.Instance.CurrentHP;
+
+        RunManager.Instance?.OnCombatVictory();
     }
 
     public void StartEncounter(EncounterData encounter)

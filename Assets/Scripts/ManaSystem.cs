@@ -26,7 +26,8 @@ public class ManaSystem : MonoBehaviour
 
     public void StartTurn()
     {
-        SetMana(maxMana);
+        int bonus = RunManager.Instance?.CurrentRun?.GetBonusMana() ?? 0;
+        SetMana(maxMana + bonus);
     }
 
     public bool CanAfford(int cost) => currentMana >= cost;

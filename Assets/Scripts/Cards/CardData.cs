@@ -19,4 +19,9 @@ public class CardData : ScriptableObject
 
     [Header("Effects")]
     public List<CardEffect> effects = new List<CardEffect>();
+
+    [Header("Upgrade")]
+    [Tooltip("The upgraded version of this card. If null, this card cannot be upgraded.")]
+    public CardData upgradedVersion;
+    public bool CanUpgrade => upgradedVersion != null;
 }

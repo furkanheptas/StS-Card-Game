@@ -15,4 +15,8 @@ MonoBehaviour:
   enemyName: Green Slime
   sprite: {fileID: -3603556060819865620, guid: ee305ea32dacd8548b76c5f53febeed2, type: 3}
   maxHP: 20
-  actions: []
+  actions:
+  - type: 0
+    value: 5
+    intentIcon: {fileID: 0}
+    label: "Sald\u0131r\u0131yor"

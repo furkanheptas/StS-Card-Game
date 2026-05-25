@@ -11,7 +11,6 @@ public class Enemy : MonoBehaviour, ICombatEntity
     public int             CurrentShield { get; private set; }
     public EnemyActionData CurrentIntent { get; private set; }
 
-    // ICombatEntity
     public int   Strength                 => statusManager.GetStrength();
     public float OutgoingDamageMultiplier => 1f;
     public IReadOnlyList<IStatusEffect> StatusEffects => statusManager.Effects;
@@ -27,7 +26,6 @@ public class Enemy : MonoBehaviour, ICombatEntity
     private int  actionIndex;
     private bool initialized;
 
-    // -----------------------------------------------------------------------
 
     public void Configure(EnemyData enemyData)
     {
@@ -57,10 +55,6 @@ public class Enemy : MonoBehaviour, ICombatEntity
         AdvanceIntent();
     }
 
-    // -----------------------------------------------------------------------
-    // ICombatEntity
-
-    /// <summary>Applies damage after Vulnerable modifier; triggers Thorns on attacker.</summary>
     public void TakeDamage(int amount)
     {
         int final     = statusManager.CalculateIncomingDamage(amount);
@@ -75,7 +69,6 @@ public class Enemy : MonoBehaviour, ICombatEntity
         if (CurrentHP <= 0) Die();
     }
 
-    /// <summary>Gains shield after Frail modifier.</summary>
     public void GainShield(int amount)
     {
         CurrentShield += statusManager.CalculateBlockGain(amount);
@@ -100,17 +93,12 @@ public class Enemy : MonoBehaviour, ICombatEntity
         OnStatusChanged?.Invoke();
     }
 
-    // -----------------------------------------------------------------------
-    // Turn hooks
-
-    /// <summary>Called by CombatManager at the start of the enemy's turn.</summary>
     public void OnTurnStart()
     {
         statusManager.TickTurnStart(this);
         OnStatusChanged?.Invoke();
     }
 
-    /// <summary>Called by CombatManager at the end of the enemy's turn.</summary>
     public void OnTurnEnd()
     {
         statusManager.TickTurnEnd(this);
@@ -119,28 +107,40 @@ public class Enemy : MonoBehaviour, ICombatEntity
         OnStatusChanged?.Invoke();
     }
 
-    // -----------------------------------------------------------------------
-    // Action
-
-    /// <summary>Executes the current intent against the player.</summary>
     public void ExecuteAction(Player player)
     {
-        if (Data.actions.Count == 0 || CurrentIntent == null) return;
+        if (Data == null) { Debug.LogError($"[Enemy] {name} has no EnemyData during ExecuteAction!"); return; }
+        if (Data.actions.Count == 0) { Debug.LogWarning($"[Enemy] {name} has no actions defined in EnemyData."); return; }
+        if (CurrentIntent == null) { Debug.LogWarning($"[Enemy] {name} has no CurrentIntent."); return; }
+
+        Debug.Log($"[Enemy] {name} executing action: {CurrentIntent.type} with value: {CurrentIntent.value}");
 
         switch (CurrentIntent.type)
         {
             case EnemyActionType.Attack:
-                int raw    = statusManager.CalculateOutgoingDamage(CurrentIntent.value);
-                int final  = Mathf.Max(0, raw - CardEffectResolver.GlobalEnemyDamageDealtReduction);
-                player?.TakeDamage(final);
+                int raw = statusManager.CalculateOutgoingDamage(CurrentIntent.value);
+                int final = Mathf.Max(0, raw - CardEffectResolver.GlobalEnemyDamageDealtReduction);
+                
+                if (player != null)
+                {
+                    Debug.Log($"[Enemy] {name} attacking Player for {final} damage (Raw: {raw}, GlobalReduction: {CardEffectResolver.GlobalEnemyDamageDealtReduction})");
+                    player.TakeDamage(final);
 
-                // Thorns feedback – if player has Thorns, enemy takes that damage
-                int playerThorns = player != null ? player.StatusManager.GetThorns() : 0;
-                if (playerThorns > 0)
-                    TakeDamage(playerThorns);
+                    int playerThorns = player.StatusManager.GetThorns();
+                    if (playerThorns > 0)
+                    {
+                        Debug.Log($"[Enemy] {name} taking {playerThorns} Thorns damage from Player.");
+                        TakeDamage(playerThorns);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"[Enemy] {name} tried to attack but Player.Instance is null!");
+                }
                 break;
 
             case EnemyActionType.Defend:
+                Debug.Log($"[Enemy] {name} gaining {CurrentIntent.value} shield.");
                 GainShield(CurrentIntent.value);
                 break;
         }
@@ -155,10 +155,7 @@ public class Enemy : MonoBehaviour, ICombatEntity
         OnShieldChanged?.Invoke(CurrentShield);
     }
 
-    /// <summary>Returns Thorns stacks on this enemy.</summary>
     public int GetThorns() => statusManager.GetThorns();
-
-    // -----------------------------------------------------------------------
 
     private void AdvanceIntent()
     {

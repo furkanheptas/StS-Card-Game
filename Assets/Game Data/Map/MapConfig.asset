@@ -22,7 +22,7 @@ MonoBehaviour:
   eliteGuaranteedFloors: 060000000b000000
   bossEncounter: {fileID: 11400000, guid: 71dcd1d0b5f075f4c99528521177bc9a, type: 2}
   normalEncounters:
-  - {fileID: 11400000, guid: 71dcd1d0b5f075f4c99528521177bc9a, type: 2}
+  - {fileID: 11400000, guid: 7c4771e675e668a4799f22cf69f735b0, type: 2}
   eliteEncounters:
   - {fileID: 11400000, guid: 34240e57fa3d51b4b82196c4d74d2813, type: 2}
   events:

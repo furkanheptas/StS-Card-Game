@@ -55,15 +55,21 @@ public class Player : MonoBehaviour, ICombatEntity
     {
         int final     = statusManager.CalculateIncomingDamage(amount);
         int absorbed  = Mathf.Min(CurrentShield, final);
+        
+        Debug.Log($"[Player] Taking damage: requested={amount}, after modifiers={final}, absorbedByShield={absorbed}");
+        
         CurrentShield -= absorbed;
         CurrentHP     -= final - absorbed;
         CurrentHP      = Mathf.Max(0, CurrentHP);
+
+        Debug.Log($"[Player] HP updated: {CurrentHP + (final - absorbed)} -> {CurrentHP}");
 
         OnHPChanged?.Invoke(CurrentHP, MaxHP);
         OnShieldChanged?.Invoke(CurrentShield);
 
         if (CurrentHP <= 0)
         {
+            Debug.Log("[Player] HP reached 0. Player died.");
             RunManager.Instance?.CurrentRun?.TakeDamage(int.MaxValue);
             OnDied?.Invoke();
             RunManager.Instance?.OnPlayerDeath();

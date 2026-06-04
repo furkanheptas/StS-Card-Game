@@ -9,12 +9,12 @@ public class Player : MonoBehaviour, ICombatEntity
     [SerializeField] private PlayerData data;
     [SerializeField] private PlayerView view;
 
-    public PlayerData Data    => data;
-    public int CurrentHP      { get; private set; }
-    public int CurrentShield  { get; private set; }
-    public int MaxHP          => data.maxHP;
+    public PlayerData Data => data;
+    public int CurrentHP { get; private set; }
+    public int CurrentShield { get; private set; }
+    public int MaxHP => data.maxHP;
 
-    public int   Strength                 => statusManager.GetStrength();
+    public int Strength => statusManager.GetStrength();
     public float OutgoingDamageMultiplier => 1f;
     public IReadOnlyList<IStatusEffect> StatusEffects => statusManager.Effects;
 
@@ -23,20 +23,31 @@ public class Player : MonoBehaviour, ICombatEntity
     public StatusEffectManager StatusManager => statusManager;
 
     public event Action<int, int> OnHPChanged;
-    public event Action<int>      OnShieldChanged;
-    public event Action           OnDied;
-    public event Action           OnStatusChanged;
+    public event Action<int> OnShieldChanged;
+    public event Action OnDied;
+    public event Action OnStatusChanged;
+
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
     }
 
     private void Start()
     {
-        if (data == null) { Debug.LogError("[Player] PlayerData is not assigned.", this); return; }
+        if (data == null)
+        {
+            Debug.LogError("[Player] PlayerData is not assigned.", this);
+            return;
+        }
 
         RunData run = RunManager.Instance?.CurrentRun;
+
         if (run != null)
         {
             CurrentHP = run.currentHP;
@@ -53,16 +64,20 @@ public class Player : MonoBehaviour, ICombatEntity
 
     public void TakeDamage(int amount)
     {
-        int final     = statusManager.CalculateIncomingDamage(amount);
-        int absorbed  = Mathf.Min(CurrentShield, final);
-        
-        Debug.Log($"[Player] Taking damage: requested={amount}, after modifiers={final}, absorbedByShield={absorbed}");
-        
-        CurrentShield -= absorbed;
-        CurrentHP     -= final - absorbed;
-        CurrentHP      = Mathf.Max(0, CurrentHP);
+        int final = statusManager.CalculateIncomingDamage(amount);
+        int absorbed = Mathf.Min(CurrentShield, final);
+        int hpDamage = final - absorbed;
 
-        Debug.Log($"[Player] HP updated: {CurrentHP + (final - absorbed)} -> {CurrentHP}");
+        Debug.Log($"[Player] Taking damage: requested={amount}, after modifiers={final}, absorbedByShield={absorbed}");
+
+        CurrentShield -= absorbed;
+        CurrentHP -= hpDamage;
+        CurrentHP = Mathf.Max(0, CurrentHP);
+
+        if (hpDamage > 0)
+            BattleAudioManager.Instance?.PlayPlayerDamage();
+
+        Debug.Log($"[Player] HP updated: {CurrentHP + hpDamage} -> {CurrentHP}");
 
         OnHPChanged?.Invoke(CurrentHP, MaxHP);
         OnShieldChanged?.Invoke(CurrentShield);
@@ -115,6 +130,7 @@ public class Player : MonoBehaviour, ICombatEntity
     public void OnTurnEnd()
     {
         statusManager.TickTurnEnd(this);
+
         CurrentShield = 0;
         OnShieldChanged?.Invoke(CurrentShield);
         OnStatusChanged?.Invoke();
@@ -123,6 +139,8 @@ public class Player : MonoBehaviour, ICombatEntity
             RunManager.Instance.CurrentRun.currentHP = CurrentHP;
     }
 
-    public int CalculateOutgoingDamage(int baseDamage) =>
-        statusManager.CalculateOutgoingDamage(baseDamage);
+    public int CalculateOutgoingDamage(int baseDamage)
+    {
+        return statusManager.CalculateOutgoingDamage(baseDamage);
+    }
 }

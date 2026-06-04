@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,6 @@ public static class CardEffectResolver
     private static int globalEnemyDamageDealtReduction = 0;
 
     public static int GlobalEnemyDamageTakenBonus => globalEnemyDamageTakenBonus;
-
     public static int GlobalEnemyDamageDealtReduction => globalEnemyDamageDealtReduction;
 
     public static void ResetCombatModifiers()
@@ -34,11 +34,10 @@ public static class CardEffectResolver
                     break;
 
                 case TargetType.AllEnemies:
-
                     if (BattleManager.Instance != null)
                     {
-
                         var enemies = new List<Enemy>(BattleManager.Instance.ActiveEnemies);
+
                         foreach (Enemy enemy in enemies)
                         {
                             if (enemy != null)
@@ -55,24 +54,113 @@ public static class CardEffectResolver
         }
     }
 
-    private static void ApplyToEnemy(CardEffect effect, Enemy enemy, Player player)
+    public static IEnumerator ResolveRoutine(CardData cardData, Collider2D singleTarget)
     {
-        if (enemy == null) return;
+        Player player = Player.Instance;
+
+        foreach (CardEffect effect in cardData.effects)
+        {
+            switch (cardData.targetType)
+            {
+                case TargetType.SingleEnemy:
+                    if (singleTarget != null)
+                    {
+                        Enemy enemy = singleTarget.GetComponent<Enemy>();
+
+                        if (enemy != null)
+                            yield return ApplyToEnemyRoutine(effect, enemy, player);
+                    }
+                    break;
+
+                case TargetType.AllEnemies:
+                    if (BattleManager.Instance != null)
+                    {
+                        var enemies = new List<Enemy>(BattleManager.Instance.ActiveEnemies);
+
+                        foreach (Enemy enemy in enemies)
+                        {
+                            if (enemy != null)
+                                yield return ApplyToEnemyRoutine(effect, enemy, player);
+                        }
+                    }
+                    break;
+
+                case TargetType.Self:
+                case TargetType.None:
+                    ApplyToPlayer(effect, player);
+                    break;
+            }
+        }
+    }
+
+    private static IEnumerator ApplyToEnemyRoutine(CardEffect effect, Enemy enemy, Player player)
+    {
+        if (enemy == null)
+            yield break;
 
         switch (effect.type)
         {
             case CardEffectType.Damage:
-                int thorns = enemy.GetThorns();
+                {
+                    int thorns = enemy.GetThorns();
 
-                int rawDamage = player != null
-                    ? player.CalculateOutgoingDamage(effect.value)
-                    : effect.value;
-                int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
-                enemy.TakeDamage(finalDamage);
+                    if (player != null)
+                    {
+                        BattleAudioManager.Instance?.PlayPlayerAttack();
+                        yield return CombatVisualEffect.PlayAttackMotion(player.transform, enemy.transform);
+                    }
 
-                if (thorns > 0 && player != null)
-                    player.TakeDamage(thorns);
+                    if (enemy != null)
+                        yield return CombatVisualEffect.PlayShake(enemy.transform);
+
+                    int rawDamage = player != null
+                        ? player.CalculateOutgoingDamage(effect.value)
+                        : effect.value;
+
+                    int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
+
+                    if (enemy != null)
+                        enemy.TakeDamage(finalDamage);
+
+                    if (thorns > 0 && player != null)
+                    {
+                        yield return CombatVisualEffect.PlayShake(player.transform);
+                        player.TakeDamage(thorns);
+                    }
+
+                    break;
+                }
+
+            default:
+                ApplyToEnemy(effect, enemy, player);
                 break;
+        }
+    }
+
+    private static void ApplyToEnemy(CardEffect effect, Enemy enemy, Player player)
+    {
+        if (enemy == null)
+            return;
+
+        switch (effect.type)
+        {
+            case CardEffectType.Damage:
+                {
+                    int thorns = enemy.GetThorns();
+
+                    int rawDamage = player != null
+                        ? player.CalculateOutgoingDamage(effect.value)
+                        : effect.value;
+
+                    int finalDamage = rawDamage + globalEnemyDamageTakenBonus;
+
+                    enemy.TakeDamage(finalDamage);
+
+                    if (thorns > 0 && player != null)
+                        player.TakeDamage(thorns);
+
+                    break;
+                }
 
             case CardEffectType.Block:
                 enemy.GainShield(effect.value);
@@ -106,7 +194,8 @@ public static class CardEffectResolver
 
     private static void ApplyToPlayer(CardEffect effect, Player player)
     {
-        if (player == null) return;
+        if (player == null)
+            return;
 
         switch (effect.type)
         {
@@ -183,10 +272,13 @@ public static class CardEffectResolver
                 break;
         }
     }
+
     private static void DiscardRandomCards(int count)
     {
         DeckManager deck = DeckManager.Instance;
-        if (deck == null) return;
+
+        if (deck == null)
+            return;
 
         List<Card> handSnapshot = new List<Card>(deck.Hand);
         int toDiscard = Mathf.Min(count, handSnapshot.Count);
@@ -195,6 +287,7 @@ public static class CardEffectResolver
         {
             int randomIndex = Random.Range(0, handSnapshot.Count);
             Card card = handSnapshot[randomIndex];
+
             handSnapshot.RemoveAt(randomIndex);
             deck.DiscardCard(card);
         }
@@ -203,11 +296,13 @@ public static class CardEffectResolver
     private static void ReduceRandomCardCostInHand(int reduction)
     {
         DeckManager deck = DeckManager.Instance;
-        if (deck == null || deck.HandCount == 0) return;
+
+        if (deck == null || deck.HandCount == 0)
+            return;
 
         List<Card> handSnapshot = new List<Card>(deck.Hand);
         int randomIndex = Random.Range(0, handSnapshot.Count);
+
         handSnapshot[randomIndex].ReduceManaCost(reduction);
     }
 }
-

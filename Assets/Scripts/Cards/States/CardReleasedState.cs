@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CardReleasedState : CardState
@@ -22,6 +23,7 @@ public class CardReleasedState : CardState
         {
             Camera cam = card.RootCanvas?.worldCamera ?? Camera.main;
             Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(cam, card.RectTransform.position);
+
             if (screenPos.y < Screen.height * PlayThresholdScreenFraction)
             {
                 stateMachine.ChangeState(card.IdleState);
@@ -29,7 +31,15 @@ public class CardReleasedState : CardState
             }
         }
 
-        bool played = card.TryPlayCard();
+        card.StartCoroutine(PlayCardThenChangeState());
+    }
+
+    private IEnumerator PlayCardThenChangeState()
+    {
+        bool played = false;
+
+        yield return card.TryPlayCardRoutine(result => played = result);
+
         stateMachine.ChangeState(played ? (CardState)card.PlayedState : card.IdleState);
     }
 }

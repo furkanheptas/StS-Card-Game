@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -32,38 +34,38 @@ public class Card : MonoBehaviour,
 
     public Collider2D AimTarget { get; set; }
 
-    public CardIdleState     IdleState     { get; private set; }
-    public CardHoverState    HoverState    { get; private set; }
-    public CardDragState     DragState     { get; private set; }
-    public CardAimState      AimState      { get; private set; }
+    public CardIdleState IdleState { get; private set; }
+    public CardHoverState HoverState { get; private set; }
+    public CardDragState DragState { get; private set; }
+    public CardAimState AimState { get; private set; }
     public CardReleasedState ReleasedState { get; private set; }
-    public CardPlayedState   PlayedState   { get; private set; }
+    public CardPlayedState PlayedState { get; private set; }
 
-    public CardData         Data                 => cardData;
-    public CardAnimator     Animator             { get; private set; }
-    public RectTransform    RectTransform        => rectTransform;
-    public CanvasGroup      CanvasGroup          => canvasGroup;
-    public Canvas           RootCanvas           { get; private set; }
-    public LineRenderer     AimLine              => aimLine;
-    public LayerMask        EnemyLayerMask       => enemyLayerMask;
-    public Vector2          HandAnchoredPosition => handAnchoredPosition;
-    public Quaternion       HandRotation         => handRotation;
-    public CardStateMachine StateMachine         => stateMachine;
+    public CardData Data => cardData;
+    public CardAnimator Animator { get; private set; }
+    public RectTransform RectTransform => rectTransform;
+    public CanvasGroup CanvasGroup => canvasGroup;
+    public Canvas RootCanvas { get; private set; }
+    public LineRenderer AimLine => aimLine;
+    public LayerMask EnemyLayerMask => enemyLayerMask;
+    public Vector2 HandAnchoredPosition => handAnchoredPosition;
+    public Quaternion HandRotation => handRotation;
+    public CardStateMachine StateMachine => stateMachine;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        canvasGroup   = GetComponent<CanvasGroup>();
-        Animator      = GetComponent<CardAnimator>();
-        RootCanvas    = GetComponentInParent<Canvas>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        Animator = GetComponent<CardAnimator>();
+        RootCanvas = GetComponentInParent<Canvas>();
 
-        stateMachine  = new CardStateMachine();
-        IdleState     = new CardIdleState(this, stateMachine);
-        HoverState    = new CardHoverState(this, stateMachine);
-        DragState     = new CardDragState(this, stateMachine);
-        AimState      = new CardAimState(this, stateMachine);
+        stateMachine = new CardStateMachine();
+        IdleState = new CardIdleState(this, stateMachine);
+        HoverState = new CardHoverState(this, stateMachine);
+        DragState = new CardDragState(this, stateMachine);
+        AimState = new CardAimState(this, stateMachine);
         ReleasedState = new CardReleasedState(this, stateMachine);
-        PlayedState   = new CardPlayedState(this, stateMachine);
+        PlayedState = new CardPlayedState(this, stateMachine);
 
         if (aimLine != null) aimLine.enabled = false;
     }
@@ -82,12 +84,12 @@ public class Card : MonoBehaviour,
 
     public void Initialize(CardData data)
     {
-        cardData       = data;
+        cardData = data;
         runtimeManaCost = data.manaCost;
 
-        if (cardNameText    != null) cardNameText.text    = data.cardName;
+        if (cardNameText != null) cardNameText.text = data.cardName;
         if (descriptionText != null) descriptionText.text = data.description;
-        if (artworkImage    != null && data.artwork != null) artworkImage.sprite = data.artwork;
+        if (artworkImage != null && data.artwork != null) artworkImage.sprite = data.artwork;
 
         RefreshManaCostDisplay();
     }
@@ -106,7 +108,7 @@ public class Card : MonoBehaviour,
     public void SetHandTransform(Vector2 anchoredPosition, Quaternion rotation)
     {
         handAnchoredPosition = anchoredPosition;
-        handRotation         = rotation;
+        handRotation = rotation;
 
         if (stateMachine.CurrentState is CardIdleState)
         {
@@ -128,13 +130,36 @@ public class Card : MonoBehaviour,
         return true;
     }
 
+    public IEnumerator TryPlayCardRoutine(Action<bool> onComplete)
+    {
+        if (cardData == null)
+        {
+            onComplete?.Invoke(false);
+            yield break;
+        }
+
+        ManaSystem mana = ManaSystem.Instance;
+        if (mana != null && !mana.CanAfford(runtimeManaCost))
+        {
+            onComplete?.Invoke(false);
+            yield break;
+        }
+
+        mana?.SpendMana(runtimeManaCost);
+
+        yield return CardEffectResolver.ResolveRoutine(cardData, AimTarget);
+
+        DeckManager.Instance?.OnCardPlayed(this);
+        onComplete?.Invoke(true);
+    }
+
     public void OnPointerEnter(PointerEventData eventData) => stateMachine.OnPointerEnter();
-    public void OnPointerExit(PointerEventData eventData)  => stateMachine.OnPointerExit();
-    public void OnPointerDown(PointerEventData eventData)  => stateMachine.OnPointerDown();
-    public void OnPointerUp(PointerEventData eventData)    => stateMachine.OnPointerUp();
-    public void OnBeginDrag(PointerEventData eventData)    => stateMachine.OnBeginDrag();
-    public void OnDrag(PointerEventData eventData)         => stateMachine.OnDrag();
-    public void OnEndDrag(PointerEventData eventData)      => stateMachine.OnEndDrag();
+    public void OnPointerExit(PointerEventData eventData) => stateMachine.OnPointerExit();
+    public void OnPointerDown(PointerEventData eventData) => stateMachine.OnPointerDown();
+    public void OnPointerUp(PointerEventData eventData) => stateMachine.OnPointerUp();
+    public void OnBeginDrag(PointerEventData eventData) => stateMachine.OnBeginDrag();
+    public void OnDrag(PointerEventData eventData) => stateMachine.OnDrag();
+    public void OnEndDrag(PointerEventData eventData) => stateMachine.OnEndDrag();
 }
 
 

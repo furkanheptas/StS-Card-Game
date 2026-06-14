@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,26 +7,25 @@ public class Enemy : MonoBehaviour, ICombatEntity
 {
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    public EnemyData       Data          { get; private set; }
-    public int             CurrentHP     { get; private set; }
-    public int             CurrentShield { get; private set; }
+    public EnemyData Data { get; private set; }
+    public int CurrentHP { get; private set; }
+    public int CurrentShield { get; private set; }
     public EnemyActionData CurrentIntent { get; private set; }
 
-    public int   Strength                 => statusManager.GetStrength();
+    public int Strength => statusManager.GetStrength();
     public float OutgoingDamageMultiplier => 1f;
     public IReadOnlyList<IStatusEffect> StatusEffects => statusManager.Effects;
 
     private readonly StatusEffectManager statusManager = new StatusEffectManager();
 
-    public event Action<int, int>        OnHPChanged;
-    public event Action<int>             OnShieldChanged;
+    public event Action<int, int> OnHPChanged;
+    public event Action<int> OnShieldChanged;
     public event Action<EnemyActionData> OnIntentChanged;
-    public event Action                  OnDied;
-    public event Action                  OnStatusChanged;
+    public event Action OnDied;
+    public event Action OnStatusChanged;
 
-    private int  actionIndex;
+    private int actionIndex;
     private bool initialized;
-
 
     public void Configure(EnemyData enemyData)
     {
@@ -41,12 +41,16 @@ public class Enemy : MonoBehaviour, ICombatEntity
 
     private void Initialize()
     {
-        if (Data == null) { Debug.LogError($"[Enemy] {name} has no EnemyData.", this); return; }
+        if (Data == null)
+        {
+            Debug.LogError($"[Enemy] {name} has no EnemyData.", this);
+            return;
+        }
 
-        initialized   = true;
-        CurrentHP     = Data.maxHP;
+        initialized = true;
+        CurrentHP = Data.maxHP;
         CurrentShield = 0;
-        actionIndex   = 0;
+        actionIndex = 0;
 
         if (spriteRenderer != null && Data.sprite != null)
             spriteRenderer.sprite = Data.sprite;
@@ -57,16 +61,22 @@ public class Enemy : MonoBehaviour, ICombatEntity
 
     public void TakeDamage(int amount)
     {
-        int final     = statusManager.CalculateIncomingDamage(amount);
-        int absorbed  = Mathf.Min(CurrentShield, final);
+        int final = statusManager.CalculateIncomingDamage(amount);
+        int absorbed = Mathf.Min(CurrentShield, final);
+        int hpDamage = final - absorbed;
+
         CurrentShield -= absorbed;
-        CurrentHP     -= final - absorbed;
-        CurrentHP      = Mathf.Clamp(CurrentHP, 0, Data.maxHP);
+        CurrentHP -= hpDamage;
+        CurrentHP = Mathf.Clamp(CurrentHP, 0, Data.maxHP);
+
+        if (hpDamage > 0)
+            BattleAudioManager.Instance?.PlayEnemyDamage();
 
         OnHPChanged?.Invoke(CurrentHP, Data.maxHP);
         OnShieldChanged?.Invoke(CurrentShield);
 
-        if (CurrentHP <= 0) Die();
+        if (CurrentHP <= 0)
+            Die();
     }
 
     public void GainShield(int amount)
@@ -102,6 +112,7 @@ public class Enemy : MonoBehaviour, ICombatEntity
     public void OnTurnEnd()
     {
         statusManager.TickTurnEnd(this);
+
         CurrentShield = 0;
         OnShieldChanged?.Invoke(CurrentShield);
         OnStatusChanged?.Invoke();
@@ -109,40 +120,76 @@ public class Enemy : MonoBehaviour, ICombatEntity
 
     public void ExecuteAction(Player player)
     {
-        if (Data == null) { Debug.LogError($"[Enemy] {name} has no EnemyData during ExecuteAction!"); return; }
-        if (Data.actions.Count == 0) { Debug.LogWarning($"[Enemy] {name} has no actions defined in EnemyData."); return; }
-        if (CurrentIntent == null) { Debug.LogWarning($"[Enemy] {name} has no CurrentIntent."); return; }
+        StartCoroutine(ExecuteActionRoutine(player));
+    }
+
+    public IEnumerator ExecuteActionRoutine(Player player)
+    {
+        if (Data == null)
+        {
+            Debug.LogError($"[Enemy] {name} has no EnemyData during ExecuteAction!");
+            yield break;
+        }
+
+        if (Data.actions.Count == 0)
+        {
+            Debug.LogWarning($"[Enemy] {name} has no actions defined in EnemyData.");
+            yield break;
+        }
+
+        if (CurrentIntent == null)
+        {
+            Debug.LogWarning($"[Enemy] {name} has no CurrentIntent.");
+            yield break;
+        }
 
         Debug.Log($"[Enemy] {name} executing action: {CurrentIntent.type} with value: {CurrentIntent.value}");
 
         switch (CurrentIntent.type)
         {
             case EnemyActionType.Attack:
-                int raw = statusManager.CalculateOutgoingDamage(CurrentIntent.value);
-                int final = Mathf.Max(0, raw - CardEffectResolver.GlobalEnemyDamageDealtReduction);
-                
-                if (player != null)
                 {
-                    Debug.Log($"[Enemy] {name} attacking Player for {final} damage (Raw: {raw}, GlobalReduction: {CardEffectResolver.GlobalEnemyDamageDealtReduction})");
-                    player.TakeDamage(final);
+                    int raw = statusManager.CalculateOutgoingDamage(CurrentIntent.value);
+                    int final = Mathf.Max(0, raw - CardEffectResolver.GlobalEnemyDamageDealtReduction);
 
-                    int playerThorns = player.StatusManager.GetThorns();
-                    if (playerThorns > 0)
+                    if (player != null)
                     {
-                        Debug.Log($"[Enemy] {name} taking {playerThorns} Thorns damage from Player.");
-                        TakeDamage(playerThorns);
+                        Debug.Log($"[Enemy] {name} attacking Player for {final} damage.");
+
+                        BattleAudioManager.Instance?.PlayEnemyAttack();
+
+                        yield return CombatVisualEffect.PlayAttackMotion(transform, player.transform);
+                        yield return CombatVisualEffect.PlayShake(player.transform);
+
+                        player.TakeDamage(final);
+
+                        int playerThorns = player.StatusManager.GetThorns();
+
+                        if (playerThorns > 0)
+                        {
+                            Debug.Log($"[Enemy] {name} taking {playerThorns} Thorns damage from Player.");
+
+                            yield return CombatVisualEffect.PlayShake(transform);
+                            TakeDamage(playerThorns);
+                        }
                     }
+                    else
+                    {
+                        Debug.LogWarning($"[Enemy] {name} tried to attack but player is null!");
+                    }
+
+                    break;
                 }
-                else
-                {
-                    Debug.LogWarning($"[Enemy] {name} tried to attack but Player.Instance is null!");
-                }
-                break;
 
             case EnemyActionType.Defend:
-                Debug.Log($"[Enemy] {name} gaining {CurrentIntent.value} shield.");
-                GainShield(CurrentIntent.value);
-                break;
+                {
+                    Debug.Log($"[Enemy] {name} gaining {CurrentIntent.value} shield.");
+
+                    yield return CombatVisualEffect.PlayShake(transform);
+
+                    GainShield(CurrentIntent.value);
+                    break;
+                }
         }
 
         actionIndex = (actionIndex + 1) % Data.actions.Count;
@@ -155,11 +202,16 @@ public class Enemy : MonoBehaviour, ICombatEntity
         OnShieldChanged?.Invoke(CurrentShield);
     }
 
-    public int GetThorns() => statusManager.GetThorns();
+    public int GetThorns()
+    {
+        return statusManager.GetThorns();
+    }
 
     private void AdvanceIntent()
     {
-        if (Data.actions.Count == 0) return;
+        if (Data.actions.Count == 0)
+            return;
+
         CurrentIntent = Data.actions[actionIndex];
         OnIntentChanged?.Invoke(CurrentIntent);
     }

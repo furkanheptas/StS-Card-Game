@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c610c5d1fe214d44681f03d36578cc86, type: 3}
+  m_Name: Sentried
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  enemyName: Sentried
+  sprite: {fileID: 5739212911923232517, guid: 6295c5b923a9e8f4b9b53d32ca18b0a4, type: 3}
+  maxHP: 45
+  actions:
+  - type: 1
+    value: 10
+    intentIcon: {fileID: 0}
+    label: 
+  - type: 0
+    value: 8
+    intentIcon: {fileID: 0}
+    label: 

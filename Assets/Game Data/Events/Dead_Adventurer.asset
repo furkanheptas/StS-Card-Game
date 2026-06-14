@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8730772a746ffd345b23404b2dfa5ab1, type: 3}
+  m_Name: Dead_Adventurer
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  eventName: Dead Adventurer
+  description: A fallen hero's pack lies in the road. Loot it or leave it?
+  artwork: {fileID: 0}
+  choices:
+  - choiceText: Loot the body
+    resultDescription: You find 75 gold, but a trap deals 10 damage to you.
+    effectType: 0
+    value: 75
+    cardReward: {fileID: 0}
+    collectibleReward: {fileID: 0}
+  - choiceText: Leave it be
+    resultDescription: You pass without incident.
+    effectType: 0
+    value: 0
+    cardReward: {fileID: 0}
+    collectibleReward: {fileID: 0}

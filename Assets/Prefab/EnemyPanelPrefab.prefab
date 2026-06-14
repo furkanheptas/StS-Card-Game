@@ -101,7 +101,7 @@ MonoBehaviour:
   intentIcon: {fileID: 4225217938845585914}
   intentValueText: {fileID: 8049119328895048094}
   intentLabel: {fileID: 2769278237121034337}
-  worldVerticalOffset: 1.2
+  worldVerticalOffset: 0.8
 --- !u!1 &1653052117665503757
 GameObject:
   m_ObjectHideFlags: 0

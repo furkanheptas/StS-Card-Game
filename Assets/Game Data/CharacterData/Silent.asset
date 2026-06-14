@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b1d8ace1a4a5964fad4feda8ba66302, type: 3}
+  m_Name: Silent
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: The Silent
+  characterDescription: A cunning rogue who poisons, weakens, and outmaneuvers enemies
+    with deadly precision.
+  portrait: {fileID: 2019789747948817947, guid: 92860384f338fba4ca217bdbc44d248e, type: 3}
+  combatSprite: {fileID: 2019789747948817947, guid: 92860384f338fba4ca217bdbc44d248e, type: 3}
+  startingMaxHP: 70
+  startingGold: 100
+  startingMana: 3
+  startingDeck:
+  - {fileID: 11400000, guid: 608bfa863cf42194da636dbaf684aa93, type: 2}
+  - {fileID: 11400000, guid: 608bfa863cf42194da636dbaf684aa93, type: 2}
+  - {fileID: 11400000, guid: 608bfa863cf42194da636dbaf684aa93, type: 2}
+  - {fileID: 11400000, guid: 608bfa863cf42194da636dbaf684aa93, type: 2}
+  - {fileID: 11400000, guid: dacde759f19e78543afdcebf2af7ce49, type: 2}
+  - {fileID: 11400000, guid: dacde759f19e78543afdcebf2af7ce49, type: 2}
+  - {fileID: 11400000, guid: dacde759f19e78543afdcebf2af7ce49, type: 2}
+  - {fileID: 11400000, guid: dacde759f19e78543afdcebf2af7ce49, type: 2}
+  - {fileID: 11400000, guid: 5bbb9a810a9083a4da41d6aa0785b000, type: 2}
+  - {fileID: 11400000, guid: 96c67aba0e95c8641bb5d90345f2a2b5, type: 2}
+  startingCollectibles:
+  - {fileID: 11400000, guid: 18c7cc7eaa3a37c4d8eb89285467186d, type: 2}

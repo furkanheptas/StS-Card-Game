@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f479a86941637804fa9c9c4f06ccf0ab, type: 3}
+  m_Name: The_Merchant
+  m_EditorClassIdentifier: Assembly-CSharp::ShopData
+  shopName: The Merchant
+  cardPool:
+  - {fileID: 11400000, guid: d7df11c5cae6298418769691d5d88815, type: 2}
+  - {fileID: 11400000, guid: a2402396642b60b4b908be8cd7694aed, type: 2}
+  - {fileID: 11400000, guid: 2f76d71b7b4153845afd7b32cc4ba9a0, type: 2}
+  - {fileID: 11400000, guid: eb5d34c83979c814f84ab2645800bc00, type: 2}
+  - {fileID: 11400000, guid: d57d97d38270ee24cbdda4416c20416e, type: 2}
+  - {fileID: 11400000, guid: 44da4c1294de31844af6b005a6759197, type: 2}
+  - {fileID: 11400000, guid: 7d34e18eb01831247a8876b6f4aff693, type: 2}
+  - {fileID: 11400000, guid: 35b8a0dd3dcf9134b9fde344b2818727, type: 2}
+  - {fileID: 11400000, guid: 5616b0d5d46fdac48a5d76f1780ae713, type: 2}
+  - {fileID: 11400000, guid: 51cb28536a000c442a64e67e0492918e, type: 2}
+  - {fileID: 11400000, guid: 73dccacd234ea494d88b58f04764382a, type: 2}
+  - {fileID: 11400000, guid: 83a5da0812611e24297fe985e274e973, type: 2}
+  - {fileID: 11400000, guid: 14f422200b4affa47a42327c5a273652, type: 2}
+  - {fileID: 11400000, guid: 4fef728c1c0120d498de65e39e747cfc, type: 2}
+  - {fileID: 11400000, guid: 85d6977989ca6094bb882fee167f5d1a, type: 2}
+  - {fileID: 11400000, guid: 5d4db97e9d8642042a92698c4e6d1a54, type: 2}
+  - {fileID: 11400000, guid: 900ebbe5479c9ae40b59ae8f52b8d227, type: 2}
+  - {fileID: 11400000, guid: 602b490d4f180ea4ba37a5787508ec29, type: 2}
+  - {fileID: 11400000, guid: 5dd4e2cdda2eb3747a55d7f168bc083d, type: 2}
+  - {fileID: 11400000, guid: 45ec175f13078e94fa669f2d0d2beea2, type: 2}
+  cardSlotCount: 5
+  cardPriceMin: 50
+  cardPriceMax: 150
+  collectiblePool:
+  - {fileID: 11400000, guid: a0176dcc90818be4f8d313287a070cea, type: 2}
+  - {fileID: 11400000, guid: 58d1962a87c6459428cc0ecbf39d658d, type: 2}
+  - {fileID: 11400000, guid: 8f273ddb171c38a4286ce597403e07fb, type: 2}
+  - {fileID: 11400000, guid: a8cb06cab0e313949960943fdc80caeb, type: 2}
+  - {fileID: 11400000, guid: f8cbd51847fa31547b7ab8e19aee9bd5, type: 2}
+  - {fileID: 11400000, guid: 421cf11ad42a3964d8748ea0dcf2e399, type: 2}
+  - {fileID: 11400000, guid: afd741f7ce028444db2e6bdd249d701c, type: 2}
+  - {fileID: 11400000, guid: 36cddedb25e40354185b3e200f5a34ad, type: 2}
+  - {fileID: 11400000, guid: 9293e788a4494fd4caa03774a3ba7329, type: 2}
+  - {fileID: 11400000, guid: 2bc0b91311e848f4589f410d8e299158, type: 2}
+  - {fileID: 11400000, guid: 87bd6a448f6e9e544bbd04b19ac0faeb, type: 2}
+  collectibleSlotCount: 2
+  collectiblePriceMin: 150
+  collectiblePriceMax: 300
+  removalCost: 75
+  upgradeCost: 90

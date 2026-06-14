@@ -272,8 +272,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -66, y: -0.091841}
-  m_SizeDelta: {x: 374.7435, y: 88.9664}
+  m_AnchoredPosition: {x: -120.37, y: -3.9679}
+  m_SizeDelta: {x: 483.49, y: 96.7186}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &106483471
 MonoBehaviour:
@@ -295,10 +295,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Mus\u0131c audio"
+  m_text: Music audio
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 59c5049c0e82a6d4bad7b9fd6062cc40, type: 2}
-  m_sharedMaterial: {fileID: 1176704803431996653, guid: 59c5049c0e82a6d4bad7b9fd6062cc40, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials:
   - {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_fontMaterial: {fileID: 0}
@@ -1783,8 +1783,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -81, y: -0.000020504}
-  m_SizeDelta: {x: 357.5837, y: 93.3182}
+  m_AnchoredPosition: {x: -132.16, y: 3.1009}
+  m_SizeDelta: {x: 459.91, y: 87.1164}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1035089088
 MonoBehaviour:
@@ -1808,8 +1808,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Effect Audio
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 59c5049c0e82a6d4bad7b9fd6062cc40, type: 2}
-  m_sharedMaterial: {fileID: 1176704803431996653, guid: 59c5049c0e82a6d4bad7b9fd6062cc40, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials:
   - {fileID: 2100000, guid: 125cb55b44b24c4393181402bc6200e6, type: 2}
   m_fontMaterial: {fileID: 0}

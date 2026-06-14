@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a0a715455adfa84f990ab5323c4736f, type: 3}
+  m_Name: Burning_Blood
+  m_EditorClassIdentifier: Assembly-CSharp::CollectibleData
+  collectibleName: Burning Blood
+  description: Gain 2 Strength and 1 extra Mana each combat.
+  artwork: {fileID: -1782993226962895715, guid: 36ddea84382656f4abf3892e6cef0c22, type: 3}
+  rarity: 4
+  bonusMaxHP: 0
+  bonusMana: 1
+  bonusCardDraw: 0
+  bonusStrength: 2
+  bonusStartingGold: 0

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64fbc9e0f90556a4494a5fe4e089a246, type: 3}
+  m_Name: ActOne
+  m_EditorClassIdentifier: Assembly-CSharp::MapConfig
+  mapName: Act I - The Spire
+  floorCount: 15
+  columnsPerFloor: 7
+  weightNormal: 45
+  weightElite: 15
+  weightShop: 10
+  weightEvent: 20
+  weightRest: 10
+  eliteGuaranteedFloors: 060000000b000000
+  bossEncounter: {fileID: 11400000, guid: 5cc2225f7ba3ba548b03a0f66a1ae9d0, type: 2}
+  normalEncounters:
+  - {fileID: 11400000, guid: 843499df3a7e73b47b9361925effb57e, type: 2}
+  - {fileID: 11400000, guid: 86cc4d9edad88054f80e047659131f36, type: 2}
+  - {fileID: 11400000, guid: ad0c5604e4907e24a8c090414199d953, type: 2}
+  - {fileID: 11400000, guid: bd7ee27a373df8244ad9fd6da0644edd, type: 2}
+  - {fileID: 11400000, guid: 2783edfcb4cecb845a48a5c10df52507, type: 2}
+  - {fileID: 11400000, guid: cff8aeb7f639ad4418717be6e2102095, type: 2}
+  eliteEncounters:
+  - {fileID: 11400000, guid: c5f64f4404b73094f9abc262ac9832a5, type: 2}
+  - {fileID: 11400000, guid: c731d35cae2556f40980c4565a4e9ce0, type: 2}
+  - {fileID: 11400000, guid: 2c471558ec6e1d641952c69938328efb, type: 2}
+  - {fileID: 11400000, guid: 432e209d72bcefb47b9efe8ca8170eae, type: 2}
+  events:
+  - {fileID: 11400000, guid: 8e4614b78bd712245aec354f83761335, type: 2}
+  - {fileID: 11400000, guid: 9691793b286d9e741bae2164db4b1956, type: 2}
+  - {fileID: 11400000, guid: c498ffb876cfaa74caf6dcc864f69f65, type: 2}
+  - {fileID: 11400000, guid: 0f43588e2bec3a941b80896d5a2eb6ba, type: 2}
+  - {fileID: 11400000, guid: 864175f5fed2f254e990e1d90c8652fe, type: 2}
+  - {fileID: 11400000, guid: 176631bea21a15b428c0da11d38841c1, type: 2}
+  - {fileID: 11400000, guid: d5a11ff1efd62744c89ef2aa5d68a411, type: 2}

@@ -3,25 +3,17 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>
-/// Central editor window for designing all game content:
-/// Cards, Collectibles, Enemies, Enemy Waves (EncounterData), Events, and the Map Config.
-/// Open via: Tools → Game Design Editor
-/// </summary>
 public class GameDesignEditorWindow : EditorWindow
 {
-    // ── Tabs ────────────────────────────────────────────────────
     private enum Tab { Cards, Collectibles, Enemies, Encounters, Events, Shop, Map }
     private Tab currentTab = Tab.Cards;
     private static readonly string[] TabLabels =
         { "Cards", "Collectibles", "Enemies", "Encounters", "Events", "Shop", "Map" };
 
-    // ── Shared ──────────────────────────────────────────────────
     private Vector2 leftScroll;
     private Vector2 rightScroll;
     private Object selectedAsset;
 
-    // ── Asset Lists ─────────────────────────────────────────────
     private List<CardData>        cards        = new();
     private List<CollectibleData> collectibles = new();
     private List<EnemyData>       enemies      = new();
@@ -30,7 +22,6 @@ public class GameDesignEditorWindow : EditorWindow
     private List<ShopData>        shops        = new();
     private MapConfig             mapConfig;
 
-    // ── Paths ───────────────────────────────────────────────────
     private const string CardsPath        = "Assets/Game Data/Cards";
     private const string CollectiblesPath = "Assets/Game Data/Collectibles";
     private const string EnemiesPath      = "Assets/Game Data/Enemies";
@@ -70,7 +61,6 @@ public class GameDesignEditorWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    // ── Toolbar ─────────────────────────────────────────────────
 
     private void DrawToolbar()
     {
@@ -85,7 +75,6 @@ public class GameDesignEditorWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    // ── Left Panel (Asset List) ──────────────────────────────────
 
     private void DrawLeftPanel()
     {
@@ -94,20 +83,20 @@ public class GameDesignEditorWindow : EditorWindow
 
         switch (currentTab)
         {
-            case Tab.Cards:        DrawAssetList(cards,        "New Card",        CreateCard);        break;
-            case Tab.Collectibles: DrawAssetList(collectibles, "New Collectible", CreateCollectible); break;
-            case Tab.Enemies:      DrawAssetList(enemies,      "New Enemy",       CreateEnemy);       break;
-            case Tab.Encounters:   DrawAssetList(encounters,   "New Encounter",   CreateEncounter);   break;
-            case Tab.Events:       DrawAssetList(events,       "New Event",       CreateEvent);       break;
-            case Tab.Shop:         DrawAssetList(shops,        "New Shop",        CreateShop);        break;
-            case Tab.Map:          DrawMapLeftPanel();                                                break;
+            case Tab.Cards:        DrawAssetList(cards,        "New Card",        CreateCard,        c  => string.IsNullOrWhiteSpace(c.cardName)        ? c.name : c.cardName);        break;
+            case Tab.Collectibles: DrawAssetList(collectibles, "New Collectible", CreateCollectible, c  => string.IsNullOrWhiteSpace(c.collectibleName) ? c.name : c.collectibleName); break;
+            case Tab.Enemies:      DrawAssetList(enemies,      "New Enemy",       CreateEnemy,       e  => string.IsNullOrWhiteSpace(e.enemyName)       ? e.name : e.enemyName);       break;
+            case Tab.Encounters:   DrawAssetList(encounters,   "New Encounter",   CreateEncounter,   ec => string.IsNullOrWhiteSpace(ec.encounterName)   ? ec.name : ec.encounterName); break;
+            case Tab.Events:       DrawAssetList(events,       "New Event",       CreateEvent,       ev => string.IsNullOrWhiteSpace(ev.eventName)       ? ev.name : ev.eventName);     break;
+            case Tab.Shop:         DrawAssetList(shops,        "New Shop",        CreateShop,        s  => string.IsNullOrWhiteSpace(s.shopName)         ? s.name : s.shopName);        break;
+            case Tab.Map:          DrawMapLeftPanel();                                                                                                                                  break;
         }
 
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
     }
 
-    private void DrawAssetList<T>(List<T> list, string createLabel, System.Action onCreate)
+    private void DrawAssetList<T>(List<T> list, string createLabel, System.Action onCreate, System.Func<T, string> displayName)
         where T : ScriptableObject
     {
         if (GUILayout.Button(createLabel)) onCreate();
@@ -118,7 +107,7 @@ public class GameDesignEditorWindow : EditorWindow
         {
             bool isSelected = selectedAsset == asset;
             GUI.backgroundColor = isSelected ? new Color(0.5f, 0.8f, 1f) : Color.white;
-            if (GUILayout.Button(asset.name, EditorStyles.miniButton))
+            if (GUILayout.Button(displayName(asset), EditorStyles.miniButton))
                 selectedAsset = asset;
             GUI.backgroundColor = Color.white;
         }
@@ -129,14 +118,14 @@ public class GameDesignEditorWindow : EditorWindow
         if (GUILayout.Button("Create Map Config")) CreateMapConfig();
         if (mapConfig != null)
         {
+            string label = string.IsNullOrWhiteSpace(mapConfig.mapName) ? mapConfig.name : mapConfig.mapName;
             GUI.backgroundColor = selectedAsset == mapConfig ? new Color(0.5f, 0.8f, 1f) : Color.white;
-            if (GUILayout.Button(mapConfig.name, EditorStyles.miniButton))
+            if (GUILayout.Button(label, EditorStyles.miniButton))
                 selectedAsset = mapConfig;
             GUI.backgroundColor = Color.white;
         }
     }
 
-    // ── Divider ─────────────────────────────────────────────────
 
     private void DrawDivider()
     {
@@ -145,7 +134,6 @@ public class GameDesignEditorWindow : EditorWindow
         EditorGUILayout.EndVertical();
     }
 
-    // ── Right Panel (Inspector) ──────────────────────────────────
 
     private void DrawRightPanel()
     {
@@ -158,7 +146,8 @@ public class GameDesignEditorWindow : EditorWindow
         }
         else
         {
-            EditorGUILayout.LabelField(selectedAsset.name, EditorStyles.boldLabel);
+            string displayName = GetDisplayName(selectedAsset);
+            EditorGUILayout.LabelField(displayName, EditorStyles.boldLabel);
             EditorGUILayout.Space(4);
 
             switch (currentTab)
@@ -176,10 +165,6 @@ public class GameDesignEditorWindow : EditorWindow
         EditorGUILayout.EndScrollView();
         EditorGUILayout.EndVertical();
     }
-
-    // ────────────────────────────────────────────────────────────
-    // CARD EDITOR
-    // ────────────────────────────────────────────────────────────
 
     private SerializedObject cardSO;
     private void DrawCardEditor(CardData card)
@@ -207,10 +192,6 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(card);
     }
 
-    // ────────────────────────────────────────────────────────────
-    // COLLECTIBLE EDITOR
-    // ────────────────────────────────────────────────────────────
-
     private SerializedObject collectibleSO;
     private void DrawCollectibleEditor(CollectibleData col)
     {
@@ -236,10 +217,6 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(col);
     }
 
-    // ────────────────────────────────────────────────────────────
-    // ENEMY EDITOR
-    // ────────────────────────────────────────────────────────────
-
     private SerializedObject enemySO;
     private void DrawEnemyEditor(EnemyData enemy)
     {
@@ -259,10 +236,6 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(enemy);
     }
 
-    // ────────────────────────────────────────────────────────────
-    // ENCOUNTER EDITOR
-    // ────────────────────────────────────────────────────────────
-
     private SerializedObject encounterSO;
     private void DrawEncounterEditor(EncounterData encounter)
     {
@@ -272,13 +245,14 @@ public class GameDesignEditorWindow : EditorWindow
 
         encounterSO.Update();
 
+        EditorGUILayout.PropertyField(encounterSO.FindProperty("encounterName"));
+        EditorGUILayout.Space(4);
         EditorGUILayout.LabelField("Enemy Slots", EditorStyles.boldLabel);
         SerializedProperty slots = encounterSO.FindProperty("slots");
         EditorGUILayout.PropertyField(slots, true);
 
         encounterSO.ApplyModifiedProperties();
 
-        // Preview helper — list enemy names
         if (encounter.slots != null && encounter.slots.Count > 0)
         {
             EditorGUILayout.Space(4);
@@ -291,10 +265,6 @@ public class GameDesignEditorWindow : EditorWindow
 
         DrawRenameAndPingButtons(encounter);
     }
-
-    // ────────────────────────────────────────────────────────────
-    // EVENT EDITOR
-    // ────────────────────────────────────────────────────────────
 
     private SerializedObject eventSO;
     private void DrawEventEditor(EventData ev)
@@ -315,10 +285,6 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(ev);
     }
 
-    // ────────────────────────────────────────────────────────────
-    // SHOP EDITOR
-    // ────────────────────────────────────────────────────────────
-
     private SerializedObject shopSO;
     private void DrawShopEditor(ShopData shop)
     {
@@ -328,6 +294,8 @@ public class GameDesignEditorWindow : EditorWindow
 
         shopSO.Update();
 
+        EditorGUILayout.PropertyField(shopSO.FindProperty("shopName"));
+        EditorGUILayout.Space(4);
         EditorGUILayout.LabelField("Cards", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(shopSO.FindProperty("cardPool"), true);
         EditorGUILayout.PropertyField(shopSO.FindProperty("cardSlotCount"));
@@ -350,10 +318,6 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(shop);
     }
 
-    // ────────────────────────────────────────────────────────────
-    // MAP CONFIG EDITOR
-    // ────────────────────────────────────────────────────────────
-
     private SerializedObject mapSO;
     private void DrawMapEditor(MapConfig config)
     {
@@ -363,6 +327,8 @@ public class GameDesignEditorWindow : EditorWindow
 
         mapSO.Update();
 
+        EditorGUILayout.PropertyField(mapSO.FindProperty("mapName"));
+        EditorGUILayout.Space(4);
         EditorGUILayout.LabelField("Layout", EditorStyles.boldLabel);
         EditorGUILayout.PropertyField(mapSO.FindProperty("floorCount"));
         EditorGUILayout.PropertyField(mapSO.FindProperty("columnsPerFloor"));
@@ -395,7 +361,17 @@ public class GameDesignEditorWindow : EditorWindow
         DrawRenameAndPingButtons(config);
     }
 
-    // ── Shared Helpers ───────────────────────────────────────────
+    private string GetDisplayName(Object asset)
+    {
+        if (asset is CardData        card) return string.IsNullOrWhiteSpace(card.cardName)           ? card.name        : card.cardName;
+        if (asset is CollectibleData col)  return string.IsNullOrWhiteSpace(col.collectibleName)    ? col.name         : col.collectibleName;
+        if (asset is EnemyData       enemy) return string.IsNullOrWhiteSpace(enemy.enemyName)       ? enemy.name       : enemy.enemyName;
+        if (asset is EncounterData   enc)  return string.IsNullOrWhiteSpace(enc.encounterName)      ? enc.name         : enc.encounterName;
+        if (asset is EventData       ev)   return string.IsNullOrWhiteSpace(ev.eventName)           ? ev.name          : ev.eventName;
+        if (asset is ShopData        shop) return string.IsNullOrWhiteSpace(shop.shopName)          ? shop.name        : shop.shopName;
+        if (asset is MapConfig       map)  return string.IsNullOrWhiteSpace(map.mapName)            ? map.name         : map.mapName;
+        return asset.name;
+    }
 
     private void DrawRenameAndPingButtons(Object asset)
     {
@@ -408,7 +384,6 @@ public class GameDesignEditorWindow : EditorWindow
         EditorGUILayout.EndHorizontal();
     }
 
-    // ── Asset Creation ───────────────────────────────────────────
 
     private void CreateCard()
     {
@@ -467,8 +442,6 @@ public class GameDesignEditorWindow : EditorWindow
         AssetDatabase.SaveAssets();
         return asset;
     }
-
-    // ── Asset Loading ────────────────────────────────────────────
 
     private static List<T> LoadAll<T>(string folder) where T : ScriptableObject
     {

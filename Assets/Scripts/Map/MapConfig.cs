@@ -4,6 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewMapConfig", menuName = "Game/Map Config")]
 public class MapConfig : ScriptableObject
 {
+    [Tooltip("Display name for this map config shown in the editor list.")]
+    public string mapName;
+
     [Header("Layout")]
     [Tooltip("Number of floors (rows) before the boss floor.")]
     public int floorCount = 15;

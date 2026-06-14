@@ -207,6 +207,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 676622285019229289, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4269634575978586156, guid: e950d35db457a3648bcd85bd3519eea2, type: 3}
       propertyPath: m_Name
       value: RunHUD
@@ -347,15 +371,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf1975bb708a579479a4ec618e987702, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapManager
-  mapConfig: {fileID: 11400000, guid: 58842b0b5769e1542810806aa4154398, type: 2}
+  mapConfig: {fileID: 11400000, guid: 89b4b55fbaf27fa48bb2076c6d859ad1, type: 2}
   nodeViewPrefab: {fileID: 634516885062769039, guid: d0c1ad9559ee4a9419863548a92020fd, type: 3}
   mapRoot: {fileID: 563410123}
   floorSpacing: 0.5
   columnSpacing: 0.5
   connectionLinePrefab: {fileID: 7018788213999783442, guid: 2a8249e4d04b0244ebcb2ff3a2056483, type: 3}
-  goldText: {fileID: 0}
-  hpText: {fileID: 0}
-  floorText: {fileID: 0}
   abandonButton: {fileID: 1202801877}
   OnNodeSelected:
     m_PersistentCalls:
@@ -711,7 +732,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fab2291106c4e624d829ce9b95bff406, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapCameraController
-  panSpeed: 1.5
   zoomSpeed: 10
   minZoom: 0.5
   maxZoom: 2

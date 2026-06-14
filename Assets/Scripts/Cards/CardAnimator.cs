@@ -18,18 +18,36 @@ public class CardAnimator : MonoBehaviour
 
     public void MoveTo(Vector2 targetAnchoredPosition, float duration, Action onComplete = null)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            rectTransform.anchoredPosition = targetAnchoredPosition;
+            onComplete?.Invoke();
+            return;
+        }
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
         moveCoroutine = StartCoroutine(MoveRoutine(targetAnchoredPosition, duration, onComplete));
     }
 
     public void ScaleTo(Vector3 targetScale, float duration, Action onComplete = null)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            rectTransform.localScale = targetScale;
+            onComplete?.Invoke();
+            return;
+        }
         if (scaleCoroutine != null) StopCoroutine(scaleCoroutine);
         scaleCoroutine = StartCoroutine(ScaleRoutine(targetScale, duration, onComplete));
     }
 
     public void RotateTo(Quaternion targetRotation, float duration, Action onComplete = null)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            rectTransform.localRotation = targetRotation;
+            onComplete?.Invoke();
+            return;
+        }
         if (rotateCoroutine != null) StopCoroutine(rotateCoroutine);
         rotateCoroutine = StartCoroutine(RotateRoutine(targetRotation, duration, onComplete));
     }

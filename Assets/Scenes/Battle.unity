@@ -1675,7 +1675,7 @@ GameObject:
   - component: {fileID: 1291997372}
   - component: {fileID: 1291997371}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1730,7 +1730,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 1810033441652940789, guid: 316131d01f696bf47b77f48b7b6ac161, type: 3}
+  m_Sprite: {fileID: 9093361847857877592, guid: 097be760532b71548a701e47c39748e4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -473,6 +473,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSelectUI
   availableCharacters:
+  - {fileID: 11400000, guid: 8473c06b0aef5324eb40358e56a0f2b9, type: 2}
+  - {fileID: 11400000, guid: 4f9162355f8712246ae0ae9262ae0204, type: 2}
   - {fileID: 11400000, guid: 8408b4473fdb60b468179096c8f6c053, type: 2}
   characterCardPrefab: {fileID: 5109768420786213135, guid: 18d7cfad6ecf3ad409f68582e174154a, type: 3}
   cardContainer: {fileID: 550353791}

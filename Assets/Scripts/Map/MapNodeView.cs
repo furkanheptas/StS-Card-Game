@@ -3,9 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
-/// <summary>
-/// Renders a single map node on-screen and handles click interaction.
-/// </summary>
 public class MapNodeView : MonoBehaviour
 {
     [Header("Visuals")]
@@ -29,7 +26,6 @@ public class MapNodeView : MonoBehaviour
     private MapNodeData nodeData;
     private Action<MapNodeData> onClickCallback;
 
-    /// <summary>Bind data and click callback to this view.</summary>
     public void Initialize(MapNodeData data, Action<MapNodeData> onClick)
     {
         nodeData = data;
@@ -42,7 +38,6 @@ public class MapNodeView : MonoBehaviour
         UpdateVisualState(data);
     }
 
-    /// <summary>Refresh color/opacity based on node availability.</summary>
     public void UpdateVisualState(MapNodeData data)
     {
         nodeData = data;
@@ -69,9 +64,6 @@ public class MapNodeView : MonoBehaviour
         };
     }
 
-    /// <summary>
-    /// Called by MapManager when a confirmed click hits this node's collider.
-    /// </summary>
     public void OnClicked()
     {
         Debug.Log($"[MapNodeView] Clicked node #{nodeData?.nodeIndex} | isAvailable: {nodeData?.isAvailable} | Type: {nodeData?.nodeType}");

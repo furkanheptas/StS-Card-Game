@@ -69,7 +69,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -206,7 +207,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -480,7 +482,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -762,11 +765,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a186c835ce346134986ce564fecd2df1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RewardCardUI
-  artwork: {fileID: 0}
-  cardNameText: {fileID: 0}
-  descriptionText: {fileID: 0}
-  manaCostText: {fileID: 0}
-  pickButton: {fileID: 0}
+  artwork: {fileID: 1756385866889908234}
+  cardNameText: {fileID: 3401280870956912295}
+  descriptionText: {fileID: 2464273878118599150}
+  manaCostText: {fileID: 8250840906894506511}
+  pickButton: {fileID: 1246209062881148957}
 --- !u!1 &9162489661380576611
 GameObject:
   m_ObjectHideFlags: 0

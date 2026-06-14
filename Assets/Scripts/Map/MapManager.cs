@@ -4,10 +4,6 @@ using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/// <summary>
-/// Scene-level manager for the Map scene.
-/// Generates (or restores) the map graph, spawns MapNodeView instances, and handles navigation.
-/// </summary>
 public class MapManager : MonoBehaviour
 {
     [Header("Config")]
@@ -34,7 +30,6 @@ public class MapManager : MonoBehaviour
     private List<MapNodeData> allNodes;
     private readonly Dictionary<int, MapNodeView> nodeViews = new Dictionary<int, MapNodeView>();
 
-    // Click vs drag discrimination
     private Vector2 mouseDownScreenPos;
     private const float DragThresholdPx = 8f;
 
@@ -42,7 +37,6 @@ public class MapManager : MonoBehaviour
     {
         RunData run = RunManager.Instance?.CurrentRun;
 
-        // Restore persisted map or generate a fresh one
         if (run != null && run.mapNodes != null && run.mapNodes.Count > 0)
             allNodes = run.mapNodes;
         else
@@ -77,19 +71,31 @@ public class MapManager : MonoBehaviour
 
         if (!Mouse.current.leftButton.wasReleasedThisFrame) return;
 
-        // Ignore if mouse moved too far — user was panning, not clicking
         Vector2 mouseUpScreenPos = Mouse.current.position.ReadValue();
         if (Vector2.Distance(mouseDownScreenPos, mouseUpScreenPos) > DragThresholdPx) return;
 
+        if (Camera.main == null) return;
         Vector2 worldPos = Camera.main.ScreenToWorldPoint(mouseUpScreenPos);
-        Collider2D hit = Physics2D.OverlapPoint(worldPos);
-        if (hit == null) return;
 
-        MapNodeView view = hit.GetComponent<MapNodeView>();
-        view?.OnClicked();
+        Collider2D[] hits = Physics2D.OverlapPointAll(worldPos);
+        if (hits.Length == 0) return;
+
+        MapNodeView closestView = null;
+        float closestDist = float.MaxValue;
+        foreach (Collider2D hit in hits)
+        {
+            MapNodeView view = hit.GetComponent<MapNodeView>();
+            if (view == null) continue;
+            float dist = Vector2.Distance((Vector2)hit.transform.position, worldPos);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closestView = view;
+            }
+        }
+
+        closestView?.OnClicked();
     }
-
-    // ── Node Spawning ──────────────────────────────────────────
 
     private void SpawnNodeViews()
     {
@@ -124,15 +130,13 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    // ── Interaction ────────────────────────────────────────────
-
     private void OnNodeClicked(MapNodeData node)
     {
         Debug.Log($"Node clicked: Index={node.nodeIndex}, Type={node.nodeType}, Floor={node.floor}, Column={node.column}");
         if (!node.isAvailable) return;
 
-        LockFloor(node.floor);
         node.isVisited = true;
+        LockFloor(node.floor);
         UnlockChildren(node);
         RefreshAvailability();
 
@@ -141,7 +145,6 @@ public class MapManager : MonoBehaviour
         RunManager.Instance?.EnterNode(node);
     }
 
-    /// <summary>Lock all nodes on the given floor so only one path can be taken.</summary>
     private void LockFloor(int floor)
     {
         foreach (MapNodeData n in allNodes)
@@ -169,8 +172,6 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    // ── Camera ─────────────────────────────────────────────────
-
     private void SaveCameraState()
     {
         Camera cam = Camera.main;
@@ -179,10 +180,6 @@ public class MapManager : MonoBehaviour
         RunManager.Instance.SavedMapCameraSize     = cam.orthographicSize;
     }
 
-    /// <summary>
-    /// Centers the camera on the bottom floors (available nodes) and sets pan/zoom bounds.
-    /// Restores the last saved position if returning from a node.
-    /// </summary>
     private void CenterAndBoundCamera()
     {
         if (nodeViews.Count == 0) return;
@@ -204,7 +201,6 @@ public class MapManager : MonoBehaviour
 
         MapCameraController controller = cam.GetComponent<MapCameraController>();
 
-        // Restore saved camera state if we're returning from a battle/event
         if (RunManager.Instance?.SavedMapCameraPosition.HasValue == true)
         {
             cam.transform.position    = RunManager.Instance.SavedMapCameraPosition.Value;
@@ -212,7 +208,6 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            // Fresh run: start at bottom center
             float centerX = (minX + maxX) / 2f;
             cam.transform.position = new Vector3(centerX, minY, cam.transform.position.z);
             cam.orthographicSize   = Mathf.Clamp(floorSpacing * 3f, 4f, 12f);
@@ -220,7 +215,4 @@ public class MapManager : MonoBehaviour
 
         controller?.SetBounds(minX, maxX, minY, maxY);
     }
-
-    // ── HUD ────────────────────────────────────────────────────
-    // HP/Gold/Floor bilgisi artık RunHUD (DontDestroyOnLoad) üzerinden gösteriliyor.
 }

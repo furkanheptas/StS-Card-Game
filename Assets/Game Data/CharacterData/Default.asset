@@ -12,19 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b1d8ace1a4a5964fad4feda8ba66302, type: 3}
   m_Name: Default
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
-  characterName: asda
-  characterDescription: asdasdad
+  characterName: Test
+  characterDescription: "Test i\xE7in op karakter"
   portrait: {fileID: 0}
   combatSprite: {fileID: 9093361847857877592, guid: 097be760532b71548a701e47c39748e4, type: 3}
-  startingMaxHP: 80
-  startingGold: 100
-  startingMana: 3
+  startingMaxHP: 1000
+  startingGold: 500
+  startingMana: 10
   startingDeck:
   - {fileID: 11400000, guid: 345705f780e4c1e43884ccf2b56985be, type: 2}
   - {fileID: 11400000, guid: 345705f780e4c1e43884ccf2b56985be, type: 2}
-  - {fileID: 11400000, guid: f898c8c24422f374489628a9631b7ce9, type: 2}
-  - {fileID: 11400000, guid: f898c8c24422f374489628a9631b7ce9, type: 2}
-  - {fileID: 11400000, guid: f898c8c24422f374489628a9631b7ce9, type: 2}
-  - {fileID: 11400000, guid: d9349dd74bfbd9c479901e7cf63e9352, type: 2}
-  - {fileID: 11400000, guid: d9349dd74bfbd9c479901e7cf63e9352, type: 2}
   startingCollectibles: []

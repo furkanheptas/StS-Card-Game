@@ -11,6 +11,13 @@ public class RunHUD : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hpText;
     [SerializeField] private Slider hpSlider;
 
+    public Slider HPSlider => hpSlider;
+    public TextMeshProUGUI HPText => hpText;
+
+    [Header("Shield")]
+    [SerializeField] private GameObject shieldContainer;
+    [SerializeField] private TextMeshProUGUI shieldText;
+
     [Header("Gold & Floor")]
     [SerializeField] private TextMeshProUGUI goldText;
     [SerializeField] private TextMeshProUGUI floorText;
@@ -20,6 +27,8 @@ public class RunHUD : MonoBehaviour
     [SerializeField] private CollectibleHUDIcon collectibleIconPrefab;
 
     private readonly List<CollectibleHUDIcon> spawnedIcons = new List<CollectibleHUDIcon>();
+
+    private Player boundPlayer;
 
     private void Awake()
     {
@@ -61,6 +70,7 @@ public class RunHUD : MonoBehaviour
 
     private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
     {
+        UnbindPlayer();
         Refresh();
     }
     public void Refresh()
@@ -99,5 +109,39 @@ public class RunHUD : MonoBehaviour
             icon.Initialize(col);
             spawnedIcons.Add(icon);
         }
+    }
+
+    public void BindToPlayer(Player p)
+    {
+        UnbindPlayer();
+        boundPlayer = p;
+        boundPlayer.OnHPChanged    += OnPlayerHPChanged;
+        boundPlayer.OnShieldChanged += OnPlayerShieldChanged;
+    }
+
+    public void UnbindPlayer()
+    {
+        if (boundPlayer == null) return;
+        boundPlayer.OnHPChanged    -= OnPlayerHPChanged;
+        boundPlayer.OnShieldChanged -= OnPlayerShieldChanged;
+        boundPlayer = null;
+
+        if (shieldContainer != null) shieldContainer.SetActive(false);
+    }
+
+    private void OnPlayerHPChanged(int current, int max)
+    {
+        if (hpText != null)   hpText.text   = $"HP: {current} / {max}";
+        if (hpSlider != null)
+        {
+            hpSlider.maxValue = max;
+            hpSlider.value    = current;
+        }
+    }
+
+    private void OnPlayerShieldChanged(int shield)
+    {
+        if (shieldContainer != null) shieldContainer.SetActive(shield > 0);
+        if (shieldText != null)      shieldText.text = shield.ToString();
     }
 }

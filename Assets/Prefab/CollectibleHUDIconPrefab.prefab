@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5063970229752410675
 RectTransform:
   m_ObjectHideFlags: 0
@@ -340,6 +340,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9ceecf619c69f8409fc1020a04a568d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CollectibleHUDIcon
-  artworkImage: {fileID: 0}
-  tooltipText: {fileID: 0}
-  tooltipPanel: {fileID: 0}
+  artworkImage: {fileID: 4677087078267389453}
+  tooltipText: {fileID: 72718761975141498}
+  tooltipPanel: {fileID: 2759987816399364199}

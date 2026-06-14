@@ -15,9 +15,10 @@ MonoBehaviour:
   cardName: Aoe
   description: "gHerekse Sald\u0131r\u0131r"
   artwork: {fileID: 0}
-  manaCost: 2
+  manaCost: 1
   cardType: 0
   targetType: 1
   effects:
   - type: 0
-    value: 2
+    value: 1000
+  upgradedVersion: {fileID: 0}

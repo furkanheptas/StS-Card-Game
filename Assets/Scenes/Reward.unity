@@ -966,10 +966,63 @@ MonoBehaviour:
   goldText: {fileID: 1051398244}
   cardRewardContainer: {fileID: 119775804}
   rewardCardPrefab: {fileID: 8613759361049933609, guid: 38bd9043d927a4d43a94f0589879fe26, type: 3}
-  cardRewardPool: []
+  cardRewardPool:
+  - {fileID: 11400000, guid: 5dd4e2cdda2eb3747a55d7f168bc083d, type: 2}
+  - {fileID: 11400000, guid: 7544b2c79b6af30478c293bc69ea252e, type: 2}
+  - {fileID: 11400000, guid: 51cb28536a000c442a64e67e0492918e, type: 2}
+  - {fileID: 11400000, guid: c933e9a899a2be545af17d3fc9aca287, type: 2}
+  - {fileID: 11400000, guid: 76452e7f11e657445b9084906b235ad6, type: 2}
+  - {fileID: 11400000, guid: 83a5da0812611e24297fe985e274e973, type: 2}
+  - {fileID: 11400000, guid: 45ec175f13078e94fa669f2d0d2beea2, type: 2}
+  - {fileID: 11400000, guid: da4bc44eb3fb82d4f9271b292510056a, type: 2}
+  - {fileID: 11400000, guid: b5d245b252b998c459d8be515dc1478a, type: 2}
+  - {fileID: 11400000, guid: 1d2e91dfefa1acf44bf0936719f9eae1, type: 2}
+  - {fileID: 11400000, guid: 602b490d4f180ea4ba37a5787508ec29, type: 2}
+  - {fileID: 11400000, guid: 4fef728c1c0120d498de65e39e747cfc, type: 2}
+  - {fileID: 11400000, guid: 16798ce5b89ce544ebffbcf4937b4afb, type: 2}
+  - {fileID: 11400000, guid: 14f422200b4affa47a42327c5a273652, type: 2}
+  - {fileID: 11400000, guid: dacde759f19e78543afdcebf2af7ce49, type: 2}
+  - {fileID: 11400000, guid: d4fb1a98eb1ed1145be9bbb9cc0438c1, type: 2}
+  - {fileID: 11400000, guid: eb5d34c83979c814f84ab2645800bc00, type: 2}
+  - {fileID: 11400000, guid: 5d4db97e9d8642042a92698c4e6d1a54, type: 2}
+  - {fileID: 11400000, guid: 2f76d71b7b4153845afd7b32cc4ba9a0, type: 2}
+  - {fileID: 11400000, guid: cfb12f9ae9cc7514b905c62f0dea72ca, type: 2}
+  - {fileID: 11400000, guid: 73dccacd234ea494d88b58f04764382a, type: 2}
+  - {fileID: 11400000, guid: f48f32ec26bbc454baf13d1c8ed2bdf2, type: 2}
+  - {fileID: 11400000, guid: 96c67aba0e95c8641bb5d90345f2a2b5, type: 2}
+  - {fileID: 11400000, guid: 608bfa863cf42194da636dbaf684aa93, type: 2}
+  - {fileID: 11400000, guid: d57d97d38270ee24cbdda4416c20416e, type: 2}
+  - {fileID: 11400000, guid: 7d34e18eb01831247a8876b6f4aff693, type: 2}
+  - {fileID: 11400000, guid: dc149f0f16569c14a81c189c9938295b, type: 2}
+  - {fileID: 11400000, guid: 4b3270da2e8fb9245954b2d94792282c, type: 2}
+  - {fileID: 11400000, guid: 85d6977989ca6094bb882fee167f5d1a, type: 2}
+  - {fileID: 11400000, guid: 6e3da7835a468df458510fcb725f7787, type: 2}
+  - {fileID: 11400000, guid: 900ebbe5479c9ae40b59ae8f52b8d227, type: 2}
+  - {fileID: 11400000, guid: 83932865c9312994281e5efa0fe92db0, type: 2}
+  - {fileID: 11400000, guid: 5bbb9a810a9083a4da41d6aa0785b000, type: 2}
+  - {fileID: 11400000, guid: 5616b0d5d46fdac48a5d76f1780ae713, type: 2}
+  - {fileID: 11400000, guid: a2402396642b60b4b908be8cd7694aed, type: 2}
+  - {fileID: 11400000, guid: 35b8a0dd3dcf9134b9fde344b2818727, type: 2}
+  - {fileID: 11400000, guid: d7df11c5cae6298418769691d5d88815, type: 2}
+  - {fileID: 11400000, guid: 44da4c1294de31844af6b005a6759197, type: 2}
+  - {fileID: 11400000, guid: 96ab81ef4e43e434f87967837b25e837, type: 2}
   cardChoiceCount: 3
   collectibleSlot: {fileID: 48942698046512325, guid: 7285d043ae3a06349b4aa813868da268, type: 3}
-  collectiblePool: []
+  collectiblePool:
+  - {fileID: 11400000, guid: a8cb06cab0e313949960943fdc80caeb, type: 2}
+  - {fileID: 11400000, guid: f8cbd51847fa31547b7ab8e19aee9bd5, type: 2}
+  - {fileID: 11400000, guid: afd741f7ce028444db2e6bdd249d701c, type: 2}
+  - {fileID: 11400000, guid: 8f273ddb171c38a4286ce597403e07fb, type: 2}
+  - {fileID: 11400000, guid: ca46fdbed070a1141a486b2e600bc868, type: 2}
+  - {fileID: 11400000, guid: 18c7cc7eaa3a37c4d8eb89285467186d, type: 2}
+  - {fileID: 11400000, guid: 36cddedb25e40354185b3e200f5a34ad, type: 2}
+  - {fileID: 11400000, guid: 699ba84d4d88a1d48a80d3a848af1a9f, type: 2}
+  - {fileID: 11400000, guid: 87bd6a448f6e9e544bbd04b19ac0faeb, type: 2}
+  - {fileID: 11400000, guid: 9293e788a4494fd4caa03774a3ba7329, type: 2}
+  - {fileID: 11400000, guid: 58d1962a87c6459428cc0ecbf39d658d, type: 2}
+  - {fileID: 11400000, guid: 2bc0b91311e848f4589f410d8e299158, type: 2}
+  - {fileID: 11400000, guid: 421cf11ad42a3964d8748ea0dcf2e399, type: 2}
+  - {fileID: 11400000, guid: a0176dcc90818be4f8d313287a070cea, type: 2}
   collectibleChance: 0.3
   skipButton: {fileID: 122664117}
 --- !u!114 &1176280820

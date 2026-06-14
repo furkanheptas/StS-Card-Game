@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewEncounter", menuName = "Game/Encounter Data")]
 public class EncounterData : ScriptableObject
 {
+    [Tooltip("Display name for this encounter shown in the editor list.")]
+    public string encounterName;
+
     public List<EncounterSlot> slots = new List<EncounterSlot>();
 }
 

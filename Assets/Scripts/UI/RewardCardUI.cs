@@ -22,6 +22,6 @@ public class RewardCardUI : MonoBehaviour
         if (descriptionText != null) descriptionText.text = data.description;
         if (manaCostText != null) manaCostText.text = data.manaCost.ToString();
 
-        pickButton.onClick.AddListener(() => onPicked?.Invoke());
+        if (pickButton != null) pickButton.onClick.AddListener(() => onPicked?.Invoke());
     }
 }

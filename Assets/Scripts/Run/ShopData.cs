@@ -4,6 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewShopData", menuName = "Game/Shop Data")]
 public class ShopData : ScriptableObject
 {
+    [Tooltip("Display name for this shop shown in the editor list.")]
+    public string shopName;
+
     [Header("Cards for Sale")]
     public List<CardData> cardPool = new List<CardData>();
     [Tooltip("How many card slots the shop shows.")]

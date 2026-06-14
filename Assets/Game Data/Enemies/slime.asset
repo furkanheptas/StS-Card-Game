@@ -10,13 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c610c5d1fe214d44681f03d36578cc86, type: 3}
-  m_Name: slime
+  m_Name: Slime
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: Green Slime
+  enemyName: Slime
   sprite: {fileID: -3603556060819865620, guid: ee305ea32dacd8548b76c5f53febeed2, type: 3}
-  maxHP: 20
+  maxHP: 25
   actions:
   - type: 0
+    value: 8
+    intentIcon: {fileID: 0}
+    label: 
+  - type: 1
     value: 5
     intentIcon: {fileID: 0}
-    label: "Sald\u0131r\u0131yor"
+    label: 

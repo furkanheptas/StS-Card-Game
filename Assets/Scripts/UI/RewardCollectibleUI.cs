@@ -20,6 +20,6 @@ public class RewardCollectibleUI : MonoBehaviour
         if (nameText != null) nameText.text = data.collectibleName;
         if (descriptionText != null) descriptionText.text = data.description;
 
-        pickButton.onClick.AddListener(() => onPicked?.Invoke());
+        if (pickButton != null) pickButton.onClick.AddListener(() => onPicked?.Invoke());
     }
 }

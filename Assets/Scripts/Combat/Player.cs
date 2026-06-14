@@ -38,6 +38,15 @@ public class Player : MonoBehaviour, ICombatEntity
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            RunHUD.Instance?.UnbindPlayer();
+            Instance = null;
+        }
+    }
+
     private void Start()
     {
         if (data == null)
@@ -52,6 +61,8 @@ public class Player : MonoBehaviour, ICombatEntity
         {
             CurrentHP = run.currentHP;
             data.maxHP = run.maxHP;
+            
+            UpdateCharacterVisuals(run.selectedCharacter);
         }
         else
         {
@@ -60,6 +71,25 @@ public class Player : MonoBehaviour, ICombatEntity
 
         CurrentShield = 0;
         view?.Initialize(this);
+        RunHUD.Instance?.BindToPlayer(this);
+    }
+
+    private void UpdateCharacterVisuals(CharacterData character)
+    {
+        if (character == null || character.combatSprite == null) return;
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            Animator anim = GetComponent<Animator>();
+            if (anim != null)
+            {
+                anim.enabled = false;
+            }
+
+            sr.sprite = character.combatSprite;
+            Debug.Log($"[Player] Visuals updated to: {character.characterName}. Animator disabled to prevent sprite override.");
+        }
     }
 
     public void TakeDamage(int amount)
